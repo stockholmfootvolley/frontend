@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react"
 import { Template } from "./template"
 import { GetEvents } from "./utils";
 import {Event} from "./model"
-import { Grid, Card, CardHeader, CardContent, Box, Typography, CardActions, Button } from "@mui/material";
+import { Grid, Card, CardHeader, CardContent, Box, Typography, CardActions, Button, Link } from "@mui/material";
 
 
 export function Events() {
@@ -21,10 +21,9 @@ export function Events() {
     function getEvents() : JSX.Element {
        return  <React.Fragment>
         {events.map((event) => (
-            // Enterprise card is full width at sm breakpoint
             <Grid
               item
-              key={event.name}
+              key={event.date.toDateString()}
               xs={12}
               sm={event.name === 'Enterprise' ? 12 : 6}
               md={4}
@@ -32,9 +31,7 @@ export function Events() {
               <Card>
                 <CardHeader
                   title={event.date.toDateString()}
-                  //subheader={event.subheader}
                   titleTypographyProps={{ align: 'center' }}
-                  //action={event.name === 'Pro' ? <StarIcon /> : null}
                   subheaderTypographyProps={{
                     align: 'center',
                   }}
@@ -48,7 +45,7 @@ export function Events() {
                 <CardContent>
                   <Box
                     sx={{
-                      display: 'flex',
+                      display: 'inline',
                       justifyContent: 'center',
                       alignItems: 'baseline',
                       mb: 2,
@@ -57,28 +54,12 @@ export function Events() {
                     <Typography component="h2" variant="h5" color="text.primary">
                       {event.name}
                     </Typography>
-                    <Typography variant="h6" color="text.secondary">
-
+                    <Typography component="h5" variant="caption" color="text.secondary">
+                      <Link href={`https://maps.google.com/?q=${event.local}`}>{event.local.split(",")[0]}</Link>
                     </Typography>
                   </Box>
-                  <ul>
-                    {event.attendees.map((attendee) => (
-                      <Typography
-                        component="li"
-                        variant="subtitle1"
-                        align="center"
-                        key={attendee.name}
-                      >
-                        {attendee.phone}
-                      </Typography>
-                    ))}
-                  </ul>
                 </CardContent>
                 <CardActions>
-                  <Button
-                    fullWidth
-                  >
-                  </Button>
                 </CardActions>
               </Card>
             </Grid>
