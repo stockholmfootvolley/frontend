@@ -34,7 +34,7 @@ const footers = [
   },
 ];
 
-export function Template(props: {events: JSX.Element}) {
+export function Template(props: { events: JSX.Element }) {
 
   return (
     <React.Fragment>
@@ -49,7 +49,7 @@ export function Template(props: {events: JSX.Element}) {
         <Toolbar sx={{ flexWrap: 'wrap' }}>
           <Typography variant="h6" color="inherit" noWrap sx={{ flexGrow: 1 }}>
             <Link href="https://stockholmfootvolley.com/">Stockholm Footvolley</Link>
-          </Typography>            
+          </Typography>
         </Toolbar>
       </AppBar>
       {/* Hero unit */}
@@ -67,7 +67,7 @@ export function Template(props: {events: JSX.Element}) {
       {/* End hero unit */}
       <Container maxWidth="md" component="main">
         <Grid container spacing={5} alignItems="flex-end">
-        { props.events }
+          {props.events}
         </Grid>
       </Container>
       {/* Footer */}
