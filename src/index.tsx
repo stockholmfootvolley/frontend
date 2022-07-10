@@ -1,12 +1,26 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import {Events} from './Events';
+import {
+  HashRouter as Router,
+  Route,
+  Routes
+} from "react-router-dom";
+import { Events } from './Events';
+import { SingleEvent } from './SingleEvent';
 import reportWebVitals from './reportWebVitals';
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 root.render(
   <React.StrictMode>
-    <Events />
+    <Router >
+      <Routes>
+        <Route path="/">
+          <Route path="" element={<Events />} />
+          <Route path=":date" element={<SingleEvent />} />
+        </Route>
+      </Routes>
+    </Router>
+
   </React.StrictMode>
 );
 

@@ -18,7 +18,7 @@ export function GetEvents(): Promise<void | Event[] | null | undefined> {
 }
 
 export function GetSpecificEvent(date: string): Promise<void | Event | null | undefined> {
-    const url = new URL(`/events/${date}`, API)
+    const url = new URL(`/event/${date}`, API)
     return fetch(url, {
         method: "GET",
     })

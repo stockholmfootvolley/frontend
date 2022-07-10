@@ -34,7 +34,7 @@ const footers = [
   },
 ];
 
-export function Template(props: { events: JSX.Element }) {
+export function Template(props: any) {
 
   return (
     <React.Fragment>
@@ -53,23 +53,7 @@ export function Template(props: { events: JSX.Element }) {
         </Toolbar>
       </AppBar>
       {/* Hero unit */}
-      <Container disableGutters maxWidth="sm" component="main" sx={{ pt: 8, pb: 6 }}>
-        <Typography
-          component="h1"
-          variant="h2"
-          align="center"
-          color="text.primary"
-          gutterBottom
-        >
-          Upcoming training
-        </Typography>
-      </Container>
-      {/* End hero unit */}
-      <Container maxWidth="md" component="main">
-        <Grid container spacing={5} alignItems="flex-end">
-          {props.events}
-        </Grid>
-      </Container>
+      {props.children}
       {/* Footer */}
       <Container
         maxWidth="md"
