@@ -17,6 +17,49 @@ export function SingleEvent() {
         })
     }, [params.date])
 
+    function getEvent() {
+        if ((event === undefined) ||
+            (event.date === undefined) ||
+            (event.local === undefined)) {
+            return
+        }
+
+        return <Card>
+            <CardHeader
+                title={params.date}
+                titleTypographyProps={{ align: 'center' }}
+                subheaderTypographyProps={{
+                    align: 'center',
+                }}
+                sx={{
+                    backgroundColor: (theme) =>
+                        theme.palette.mode === 'light'
+                            ? theme.palette.grey[200]
+                            : theme.palette.grey[700],
+                }}
+            />
+            <CardContent>
+                <Box
+                    sx={{
+                        display: 'inline',
+                        justifyContent: 'center',
+                        alignItems: 'baseline',
+                        mb: 2,
+                    }}
+                >
+                    <Typography align="center" component="h2" variant="h5" color="text.primary">
+                        {event?.name}
+                    </Typography>
+                    <Typography align="center" component="h5" variant="caption" color="text.secondary">
+                        <Link to={`https://maps.google.com/?q=${event?.local}`}>{event?.local.split(",")[0]}</Link>
+                    </Typography>
+                </Box>
+            </CardContent>
+            <CardActions>
+            </CardActions>
+        </Card>
+    }
+
     return <Template>
         <Container disableGutters maxWidth="sm" component="main" sx={{ pt: 8, pb: 6 }}>
             <Typography
@@ -26,48 +69,8 @@ export function SingleEvent() {
                 color="text.primary"
                 gutterBottom
             >{params.date}</Typography>
+            {getEvent()}
         </Container>
-        <Container disableGutters maxWidth="sm" component="main" sx={{ pt: 8, pb: 6 }}>
-            <Grid container spacing={5} alignItems="flex-end">
-                <Card>
-                    <CardHeader
-                        title={params.date}
-                        titleTypographyProps={{ align: 'center' }}
-                        subheaderTypographyProps={{
-                            align: 'center',
-                        }}
-                        sx={{
-                            backgroundColor: (theme) =>
-                                theme.palette.mode === 'light'
-                                    ? theme.palette.grey[200]
-                                    : theme.palette.grey[700],
-                        }}
-                    />
-                    <CardContent>
-                        <Box
-                            sx={{
-                                display: 'inline',
-                                justifyContent: 'center',
-                                alignItems: 'baseline',
-                                mb: 2,
-                            }}
-                        >
-                            <Typography component="h2" variant="h5" color="text.primary">
-                                {event?.name}
-                            </Typography>
-                            <Typography component="h5" variant="caption" color="text.secondary">
-                                <Link to={`https://maps.google.com/?q=`}></Link>
-                            </Typography>
-                        </Box>
-                    </CardContent>
-                    <CardActions>
-                    </CardActions>
-                </Card>
-
-            </Grid>
-
-        </Container>
-
         <Container maxWidth="md" component="main">
             <Grid container spacing={5} alignItems="flex-end">
             </Grid>
