@@ -1,4 +1,4 @@
-import { Event } from "./model";
+import { Attendee, Event } from "./model";
 
 const API = "https://booking-dofknovuoa-lz.a.run.app"
 
@@ -21,6 +21,19 @@ export function GetSpecificEvent(date: string): Promise<void | Event | null | un
     const url = new URL(`/event/${date}`, API)
     return fetch(url, {
         method: "GET",
+    })
+        .then(response => response.json())
+        .then(data => {
+            const events = data as Event
+            return events
+        });
+}
+
+export function AddAttendee(date: string, attendee: Attendee): Promise<void | Event | null | undefined> {
+    const url = new URL(`/event/${date}`, API)
+    return fetch(url, {
+        method: "POST",
+        body: JSON.stringify(attendee)
     })
         .then(response => response.json())
         .then(data => {
