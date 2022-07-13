@@ -50,6 +50,22 @@ export function Template(props: any) {
           <Typography variant="h6" color="inherit" noWrap sx={{ flexGrow: 1 }}>
             <Link href="https://stockholmfootvolley.com/">Stockholm Footvolley</Link>
           </Typography>
+
+          <div
+            id="g_id_onload"
+            data-client_id="547985747308-vosl44r2iclfhvnvb0jkkkr5b3amv6jg.apps.googleusercontent.com"
+            data-login_uri="https://webhook.site/46e8f7c0-add1-4fe1-88f8-91ec62824edc"
+            data-auto_prompt="false">
+          </div>
+          <div
+            className="g_id_signin"
+            data-type="standard"
+            data-size="large"
+            data-theme="filled_black"
+            data-text="sign_in_with"
+            data-shape="rectangular"
+            data-logo_alignment="left">
+          </div>
         </Toolbar>
       </AppBar>
       {/* Hero unit */}
