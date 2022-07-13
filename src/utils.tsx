@@ -1,6 +1,6 @@
 import { Attendee, Event } from "./model";
 
-const API = "https://booking-dofknovuoa-lz.a.run.app"
+const API = "https://booking.ramonmedeiros.dev"
 
 export function GetEvents(): Promise<void | Event[] | null | undefined> {
     const url = new URL("/events", API)
