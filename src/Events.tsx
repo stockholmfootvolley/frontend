@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react"
 import { Template } from "./template"
-import { GetEvents } from "./utils"
+import { GetEvents, showDateAndTime } from "./utils"
 import { Event } from "./model"
 import { Grid, Card, CardHeader, CardContent, Box, Typography, CardActions, Container } from "@mui/material"
 import { Link } from "react-router-dom";
@@ -43,7 +43,7 @@ export function Events() {
               style={{ textDecoration: "none", color: "inherit" }}
             >
               <CardHeader
-                title={event.date.toDateString()}
+                title={showDateAndTime(event.date)}
                 titleTypographyProps={{ align: 'center' }}
                 subheaderTypographyProps={{
                   align: 'center',
@@ -102,3 +102,4 @@ export function Events() {
     </Container>
   </Template>
 }
+

@@ -45,8 +45,9 @@ export function GetSpecificEvent(date: string): Promise<void | Event | null | un
     })
         .then(response => response.json())
         .then(data => {
-            const events = data as Event
-            return events
+            const event = data as Event
+            event.date = new Date(event.date)
+            return event
         });
 }
 
@@ -89,4 +90,29 @@ export function GetToken(): string {
     }
 
     return value
+}
+
+export function showDateAndTime(date: Date): string {
+    if (date === undefined)
+        return ""
+    return `${showDate(date)} ${showTime(date)}`
+}
+
+export function showDate(date: Date): string {
+    if (date === undefined)
+        return ""
+    return `${date.getFullYear()}-${getZeroInFront(date.getMonth()+1)}-${getZeroInFront(date.getUTCDate())}`
+}
+
+export function showTime(date: Date): string {
+    if (date === undefined)
+        return ""
+    return `${getZeroInFront(date.getHours())}:${getZeroInFront(date.getMinutes())}`
+}
+
+function getZeroInFront(n: number): string {
+    if (n < 10) {
+        return `0${n}`
+    }
+    return `${n}`
 }

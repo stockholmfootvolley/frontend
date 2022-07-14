@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react"
 import { Container, Typography, Grid, Box, Card, CardActions, CardContent, CardHeader, Fab, Snackbar, } from "@mui/material"
 import { Link, useParams, } from "react-router-dom"
 import { Template } from "./template"
-import { GetSpecificEvent, AddAttendee, RemoveAttendee, GetToken } from "./utils"
+import { GetSpecificEvent, AddAttendee, RemoveAttendee, GetToken, showDate, showTime } from "./utils"
 import { Event, Attendee } from "./model"
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import PersonRemoveIcon from '@mui/icons-material/PersonRemove';
@@ -89,7 +89,6 @@ export function SingleEvent() {
         return description
     }
 
-
     function getEvent() {
         if ((event === undefined) ||
             (event.date === undefined) ||
@@ -106,10 +105,11 @@ export function SingleEvent() {
                 <meta property="og:description" content={getDescriptionMeta()} />
             </Helmet>
             <CardHeader
-                title={event.name}
-                subheader={<Typography align="center" component="h5" variant="caption" color="text.secondary">
-                    <Link to={`https://maps.google.com/?q=${event?.local}`}>{event?.local.split(",")[0]}</Link>
-                </Typography>}
+                title={`${showDate(event.date)}\n${showTime(event.date)}`}
+                subheader={
+                    <Typography align="center" component="h5" variant="caption" color="text.secondary">
+                        <Link to={`https://maps.google.com/?q=${event?.local}`}>{event?.local.split(",")[0]}</Link>
+                    </Typography>}
                 titleTypographyProps={{ align: 'center' }}
                 subheaderTypographyProps={{
                     align: 'center',
@@ -163,13 +163,13 @@ export function SingleEvent() {
     return <Template>
         <Container disableGutters maxWidth="sm" component="main" sx={{ pt: 8, pb: 6 }}>
             <Typography
-                key={params.date}
+                key={event?.name}
                 component="h1"
                 variant="h2"
                 align="center"
                 color="text.primary"
                 gutterBottom
-            >{params.date}</Typography>
+            >{event?.name}</Typography>
             {getEvent()}
         </Container>
         <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
