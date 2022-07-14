@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react"
 import { Template } from "./template"
-import { GetEvents, showDateAndTime } from "./utils"
+import { GetEvents, showDate, showDateAndTime } from "./utils"
 import { Event } from "./model"
 import { Grid, Card, CardHeader, CardContent, Box, Typography, CardActions, Container } from "@mui/material"
 import { Link } from "react-router-dom";
@@ -39,7 +39,7 @@ export function Events() {
         >
           <Card>
             <Link
-              to={event.date.toISOString().split('T')[0]}
+              to={showDate(event?.date)}
               style={{ textDecoration: "none", color: "inherit" }}
             >
               <CardHeader
