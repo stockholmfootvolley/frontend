@@ -5,8 +5,18 @@ const API = "https://booking.ramonmedeiros.dev"
 
 export function GetEvents(): Promise<void | Event[] | null | undefined> {
     const url = new URL("/events", API)
+    let token = undefined
+    try {
+        token = GetToken()
+    } catch {
+        return Promise.reject("token not found")
+    }
+
     return fetch(url, {
         method: "GET",
+        headers: {
+            "Authorization": `Bearer ${token}`,
+        },
     })
         .then(response => response.json())
         .then(data => {
@@ -19,9 +29,19 @@ export function GetEvents(): Promise<void | Event[] | null | undefined> {
 }
 
 export function GetSpecificEvent(date: string): Promise<void | Event | null | undefined> {
+    let token = undefined
+    try {
+        token = GetToken()
+    } catch {
+        return Promise.reject("token not found")
+    }
+
     const url = new URL(`/event/${date}`, API)
     return fetch(url, {
         method: "GET",
+        headers: {
+            "Authorization": `Bearer ${token}`,
+        },
     })
         .then(response => response.json())
         .then(data => {
@@ -33,7 +53,7 @@ export function GetSpecificEvent(date: string): Promise<void | Event | null | un
 export function AddAttendee(date: string): Promise<void | Event | null | undefined> {
     const url = new URL(`/event/${date}`, API)
     return fetch(url, {
-        headers:{
+        headers: {
             "Authorization": `Bearer ${GetToken()}`,
         },
         method: "POST",
@@ -48,7 +68,7 @@ export function AddAttendee(date: string): Promise<void | Event | null | undefin
 export function RemoveAttendee(date: string): Promise<void | Event | null | undefined> {
     const url = new URL(`/event/${date}`, API)
     return fetch(url, {
-        headers:{
+        headers: {
             "Authorization": `Bearer ${GetToken()}`,
         },
         method: "DELETE",
@@ -62,5 +82,11 @@ export function RemoveAttendee(date: string): Promise<void | Event | null | unde
 
 export function GetToken(): string {
     const cookies = new Cookies();
-    return cookies.get("token")
+    let value = cookies.get("token")
+
+    if (value === undefined) {
+        throw new Error("token not found")
+    }
+
+    return value
 }

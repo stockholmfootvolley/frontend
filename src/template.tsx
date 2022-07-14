@@ -53,9 +53,7 @@ export function Template(props: any) {
           <div id="buttonDiv"></div>
         </Toolbar>
       </AppBar>
-      {/* Hero unit */}
       {props.children}
-      {/* Footer */}
       <Container
         maxWidth="md"
         component="footer"
@@ -84,7 +82,8 @@ export function Template(props: any) {
           ))}
         </Grid>
       </Container>
-      {/* End footer */}
     </React.Fragment>
   );
 }
+
+

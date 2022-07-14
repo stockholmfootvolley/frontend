@@ -7,16 +7,25 @@ import { Link } from "react-router-dom";
 
 export function Events() {
   const [events, setEvents] = useState<Event[]>([])
+  const [cookies, setCookie] = React.useState(document.cookie)
 
   useEffect(() => {
+    const updateCookies = () => {
+      if (cookies.length !== document.cookie.length) {
+        setCookie(document.cookie)
+      }
+    }
+    window.setInterval(updateCookies, 100)
+
     GetEvents().then(response => {
       if ((response !== undefined) && (response !== null)) {
         setEvents(response as Event[])
       }
+    }).catch(e => {
+      console.log(e)
     })
 
-  }, [])
-
+  }, [cookies])
 
   function getEvents(): JSX.Element {
     return <React.Fragment>

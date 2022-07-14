@@ -4,7 +4,7 @@ import { Link, useParams, } from "react-router-dom"
 import { Template } from "./template"
 import { GetSpecificEvent, AddAttendee, RemoveAttendee, GetToken } from "./utils"
 import { Event, Attendee } from "./model"
-    import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import PersonRemoveIcon from '@mui/icons-material/PersonRemove';
 import { Helmet } from "react-helmet";
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
@@ -21,14 +21,22 @@ export function SingleEvent() {
     const [event, setEvent] = useState<Event>({} as Event)
     const [open, setOpen] = React.useState(false)
     const [errorMessage, setErrorMessage] = useState("")
+    const [cookies, setCookie] = React.useState(document.cookie)
 
     useEffect(() => {
+        const updateCookies = () => {
+            if (cookies.length !== document.cookie.length) {
+                setCookie(document.cookie)
+            }
+        }
+        window.setInterval(updateCookies, 100)
+
         GetSpecificEvent(params.date as string).then(response => {
             if ((response !== undefined) && (response !== null)) {
                 setEvent(response as Event)
             }
         })
-    }, [params.date])
+    }, [params.date, cookies])
 
     function handleClose(newEvent?: any, reason?: string) {
         if (reason === 'clickaway') {
@@ -99,6 +107,9 @@ export function SingleEvent() {
             </Helmet>
             <CardHeader
                 title={event.name}
+                subheader={<Typography align="center" component="h5" variant="caption" color="text.secondary">
+                    <Link to={`https://maps.google.com/?q=${event?.local}`}>{event?.local.split(",")[0]}</Link>
+                </Typography>}
                 titleTypographyProps={{ align: 'center' }}
                 subheaderTypographyProps={{
                     align: 'center',
@@ -128,9 +139,6 @@ export function SingleEvent() {
                         <PersonRemoveIcon />
                         &nbsp;&nbsp;I will not attend
                     </Fab>
-                    <Typography align="center" component="h5" variant="caption" color="text.secondary">
-                        <Link to={`https://maps.google.com/?q=${event?.local}`}>{event?.local.split(",")[0]}</Link>
-                    </Typography>
                 </Box>
             </CardContent>
             <CardActions>
