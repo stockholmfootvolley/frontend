@@ -1,4 +1,5 @@
 import { Attendee, Event } from "./model";
+import Cookies from 'universal-cookie';
 
 const API = "https://booking.ramonmedeiros.dev"
 
@@ -29,15 +30,37 @@ export function GetSpecificEvent(date: string): Promise<void | Event | null | un
         });
 }
 
-export function AddAttendee(date: string, attendee: Attendee): Promise<void | Event | null | undefined> {
+export function AddAttendee(date: string): Promise<void | Event | null | undefined> {
     const url = new URL(`/event/${date}`, API)
     return fetch(url, {
+        headers:{
+            "Authorization": `Bearer ${getToken()}`,
+        },
         method: "POST",
-        body: JSON.stringify(attendee)
     })
         .then(response => response.json())
         .then(data => {
             const events = data as Event
             return events
         });
+}
+
+export function RemoveAttendee(date: string): Promise<void | Event | null | undefined> {
+    const url = new URL(`/event/${date}`, API)
+    return fetch(url, {
+        headers:{
+            "Authorization": `Bearer ${getToken()}`,
+        },
+        method: "DELETE",
+    })
+        .then(response => response.json())
+        .then(data => {
+            const events = data as Event
+            return events
+        });
+}
+
+function getToken(): string {
+    const cookies = new Cookies();
+    return cookies.get("token")
 }
