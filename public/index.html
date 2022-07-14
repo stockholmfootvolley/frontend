@@ -33,7 +33,7 @@
           return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
       }).join(''));
 
-      document.cookie = `token=${response.credential}; expires=${Date(responsePayload.exp)}; secure; samesite;`
+      document.cookie = `token=${response.credential}; expires=${Date(responsePayload.exp)}; secure; SameSite=Strict;`
     }
     window.onload = function () {
       google.accounts.id.initialize({

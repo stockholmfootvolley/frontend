@@ -48,7 +48,7 @@ export function Template(props: any) {
       >
         <Toolbar sx={{ flexWrap: 'wrap' }}>
           <Typography variant="h6" color="inherit" noWrap sx={{ flexGrow: 1 }}>
-            <Link href="https://stockholmfootvolley.com/">Stockholm Footvolley</Link>
+            <Link href="https://stockholmfootvolley.github.io/frontend/">Booking - Stockholm Footvolley</Link>
           </Typography>
           <div id="buttonDiv"></div>
         </Toolbar>

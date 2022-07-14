@@ -1,17 +1,26 @@
 import React, { useEffect, useState } from "react"
-import { Container, Typography, Grid, Box, Card, CardActions, CardContent, CardHeader, Fab, } from "@mui/material"
+import { Container, Typography, Grid, Box, Card, CardActions, CardContent, CardHeader, Fab, Snackbar, } from "@mui/material"
 import { Link, useParams, } from "react-router-dom"
 import { Template } from "./template"
-import { GetSpecificEvent, AddAttendee, RemoveAttendee } from "./utils"
-import { Event, Attendee} from "./model"
-import AddIcon from '@mui/icons-material/Add';
-import RemoveIcon from '@mui/icons-material/Remove';
+import { GetSpecificEvent, AddAttendee, RemoveAttendee, GetToken } from "./utils"
+import { Event, Attendee } from "./model"
+    import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import PersonRemoveIcon from '@mui/icons-material/PersonRemove';
 import { Helmet } from "react-helmet";
+import MuiAlert, { AlertProps } from '@mui/material/Alert';
 
+const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
+    props,
+    ref,
+) {
+    return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
 export function SingleEvent() {
     let params = useParams()
     const [event, setEvent] = useState<Event>({} as Event)
+    const [open, setOpen] = React.useState(false)
+    const [errorMessage, setErrorMessage] = useState("")
 
     useEffect(() => {
         GetSpecificEvent(params.date as string).then(response => {
@@ -21,7 +30,20 @@ export function SingleEvent() {
         })
     }, [params.date])
 
+    function handleClose(newEvent?: any, reason?: string) {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setOpen(false);
+    };
+
     function addAttendee() {
+        if (GetToken() === undefined) {
+            setErrorMessage("User is not authenticated")
+            setOpen(true)
+            return
+        }
+
         AddAttendee(params.date as string).then(response => {
             setEvent(response as Event)
         })
@@ -31,6 +53,11 @@ export function SingleEvent() {
     }
 
     function removeAttendee() {
+        if (GetToken() === undefined) {
+            setErrorMessage("User is not authenticated")
+            setOpen(true)
+            return
+        }
         RemoveAttendee(params.date as string).then(response => {
             setEvent(response as Event)
         })
@@ -93,11 +120,13 @@ export function SingleEvent() {
                     }}
                 >
                     {getAttendes(event?.attendees)}
-                    <Fab onClick={addAttendee} color="primary" aria-label="add">
-                        <AddIcon />
+                    <Fab onClick={addAttendee} color="primary" aria-label="add" variant="extended">
+                        <PersonAddIcon />
+                        &nbsp;&nbsp;I'm Coming
                     </Fab>
-                    <Fab onClick={removeAttendee} color="primary" aria-label="add">
-                        <RemoveIcon />
+                    <Fab onClick={removeAttendee} color="primary" aria-label="remove" variant="extended">
+                        <PersonRemoveIcon />
+                        &nbsp;&nbsp;I will not attend
                     </Fab>
                     <Typography align="center" component="h5" variant="caption" color="text.secondary">
                         <Link to={`https://maps.google.com/?q=${event?.local}`}>{event?.local.split(",")[0]}</Link>
@@ -135,6 +164,11 @@ export function SingleEvent() {
             >{params.date}</Typography>
             {getEvent()}
         </Container>
+        <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+            <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
+                {errorMessage}
+            </Alert>
+        </Snackbar>
         <Container maxWidth="md" component="main">
             <Grid container spacing={5} alignItems="flex-end">
             </Grid>

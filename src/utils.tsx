@@ -1,4 +1,4 @@
-import { Attendee, Event } from "./model";
+import { Event } from "./model";
 import Cookies from 'universal-cookie';
 
 const API = "https://booking.ramonmedeiros.dev"
@@ -34,7 +34,7 @@ export function AddAttendee(date: string): Promise<void | Event | null | undefin
     const url = new URL(`/event/${date}`, API)
     return fetch(url, {
         headers:{
-            "Authorization": `Bearer ${getToken()}`,
+            "Authorization": `Bearer ${GetToken()}`,
         },
         method: "POST",
     })
@@ -49,7 +49,7 @@ export function RemoveAttendee(date: string): Promise<void | Event | null | unde
     const url = new URL(`/event/${date}`, API)
     return fetch(url, {
         headers:{
-            "Authorization": `Bearer ${getToken()}`,
+            "Authorization": `Bearer ${GetToken()}`,
         },
         method: "DELETE",
     })
@@ -60,7 +60,7 @@ export function RemoveAttendee(date: string): Promise<void | Event | null | unde
         });
 }
 
-function getToken(): string {
+export function GetToken(): string {
     const cookies = new Cookies();
     return cookies.get("token")
 }
