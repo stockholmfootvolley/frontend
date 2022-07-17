@@ -1,8 +1,7 @@
 import { Event } from "./model";
 import Cookies from 'universal-cookie';
 
-//const API = "https://booking.ramonmedeiros.dev"
-const API = "http://localhost:8080"
+const API = "https://booking.ramonmedeiros.dev"
 
 export function GetEvents(): Promise<void | Event[] | null | undefined> {
     const url = new URL("/events", API)
