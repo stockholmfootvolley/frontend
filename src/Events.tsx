@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react"
 import { Template } from "./template"
-import { GetEvents, showDate, showDateAndTime } from "./utils"
+import { GetEvents, showDateAndTime } from "./utils"
 import { Event } from "./model"
 import { Grid, Card, CardHeader, CardContent, Box, Typography, CardActions, Container } from "@mui/material"
 import { Link } from "react-router-dom";
@@ -39,7 +39,7 @@ export function Events() {
         >
           <Card>
             <Link
-              to={showDate(event?.date)}
+              to={event.date.toISOString().split('T')[0]}
               style={{ textDecoration: "none", color: "inherit" }}
             >
               <CardHeader
@@ -68,6 +68,9 @@ export function Events() {
               >
                 <Typography component="h2" variant="h5" color="text.primary">
                   {event.name}
+                </Typography>
+                <Typography component="h2" variant="h5" color="text.primary">
+                  Participants {`${event.attendees.length}/${event.max_participants}`}
                 </Typography>
                 <Typography component="h5" variant="caption" color="text.secondary">
                   <Link to={`https://maps.google.com/?q=${event.local}`}>{event.local.split(",")[0]}</Link>

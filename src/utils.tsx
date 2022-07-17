@@ -1,7 +1,8 @@
 import { Event } from "./model";
 import Cookies from 'universal-cookie';
 
-const API = "https://booking.ramonmedeiros.dev"
+//const API = "https://booking.ramonmedeiros.dev"
+const API = "http://localhost:8080"
 
 export function GetEvents(): Promise<void | Event[] | null | undefined> {
     const url = new URL("/events", API)
@@ -61,8 +62,9 @@ export function AddAttendee(date: string): Promise<void | Event | null | undefin
     })
         .then(response => response.json())
         .then(data => {
-            const events = data as Event
-            return events
+            const event = data as Event
+            event.date = new Date(event.date)
+            return event
         });
 }
 
@@ -76,8 +78,9 @@ export function RemoveAttendee(date: string): Promise<void | Event | null | unde
     })
         .then(response => response.json())
         .then(data => {
-            const events = data as Event
-            return events
+            const event = data as Event
+            event.date = new Date(event.date)
+            return event
         });
 }
 

@@ -105,7 +105,7 @@ export function SingleEvent() {
                 <meta property="og:description" content={getDescriptionMeta()} />
             </Helmet>
             <CardHeader
-                title={`${showDate(event.date)}\n${showTime(event.date)}`}
+                title={`${showDate(event?.date)}\n${showTime(event?.date)}`}
                 subheader={
                     <Typography align="center" component="h5" variant="caption" color="text.secondary">
                         <Link to={`https://maps.google.com/?q=${event?.local}`}>{event?.local.split(",")[0]}</Link>
@@ -151,13 +151,35 @@ export function SingleEvent() {
             return
         }
 
-        return <ol>
-            {attendees.map((attendee) => (
-                <React.Fragment key={Math.random()}>
-                    <Typography key={attendee.name} component="h2" variant="h5" color="text.primary"><li>{attendee.name}</li></Typography>
-                </React.Fragment>
-            ))}
-        </ol>
+        debugger
+        let normalList = [] as JSX.Element[]
+        let normalSlice = attendees.slice(0, event.max_participants)
+        normalSlice.forEach(attendee => {
+            normalList.push(<Typography key={attendee.name} component="h2" variant="h5" color="text.primary"><li>{attendee.name}</li></Typography>)
+        })
+
+        let waitingList = [] as JSX.Element[]
+        let waitingListHeader = [] as JSX.Element[]
+        const waitingSlice = attendees.slice(event.max_participants, attendees.length)
+        if (waitingSlice.length > 0) {
+            waitingListHeader.push(<br/>)
+            waitingListHeader.push(<br/>)
+            waitingListHeader.push(<Typography key="waiting_list" component="h3" variant="h5" color="text.primary">Waiting List ({waitingSlice.length})</Typography>)
+        }
+        waitingSlice.forEach(attendee => {
+            waitingList.push(<Typography key={attendee.name} component="h2" variant="h5" color="text.primary"><li>{attendee.name}</li></Typography>)
+        })
+
+        return <React.Fragment key={Math.random()}>
+            <Typography key="list" component="h3" variant="h5" color="text.primary">Participants {`${normalList.length}/${event.max_participants}`}</Typography>
+            <ol>
+                {normalList}
+            </ol>
+            {waitingListHeader}
+            <ol>
+                {waitingList}
+            </ol>
+        </React.Fragment>
     }
 
     return <Template>
