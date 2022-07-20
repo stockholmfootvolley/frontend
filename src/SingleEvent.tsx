@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react"
 import { Container, Typography, Grid, Box, Card, CardActions, CardContent, CardHeader, Fab, Snackbar, } from "@mui/material"
 import { Link, useParams, } from "react-router-dom"
 import { Template } from "./template"
-import { GetSpecificEvent, AddAttendee, RemoveAttendee, GetToken, showDate, showTime } from "./utils"
-import { Event, Attendee } from "./model"
+import { GetSpecificEvent, AddAttendee, RemoveAttendee, GetToken, showDate, showTime, GetPaymentLink } from "./utils"
+import { Event, Attendee, PaymentLink } from "./model"
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import PersonRemoveIcon from '@mui/icons-material/PersonRemove';
 import { Helmet } from "react-helmet";
@@ -50,6 +50,17 @@ export function SingleEvent() {
             setErrorMessage("User is not authenticated")
             setOpen(true)
             return
+        }
+
+        if (event.price > 0) {
+            GetPaymentLink(params.date as string).then(response => {
+                const link = response as PaymentLink
+                window.location.href = link.payment_link
+            })
+                .catch(error => {
+                    setErrorMessage("Could not fetch payment")
+                    setOpen(true)
+                })
         }
 
         AddAttendee(params.date as string).then(response => {
@@ -162,8 +173,8 @@ export function SingleEvent() {
         let waitingListHeader = [] as JSX.Element[]
         const waitingSlice = attendees.slice(event.max_participants, attendees.length)
         if (waitingSlice.length > 0) {
-            waitingListHeader.push(<br/>)
-            waitingListHeader.push(<br/>)
+            waitingListHeader.push(<br />)
+            waitingListHeader.push(<br />)
             waitingListHeader.push(<Typography key="waiting_list" component="h3" variant="h5" color="text.primary">Waiting List ({waitingSlice.length})</Typography>)
         }
         waitingSlice.forEach(attendee => {
@@ -182,6 +193,15 @@ export function SingleEvent() {
         </React.Fragment>
     }
 
+    function getEventName(): string {
+        let name = event?.name
+        if (event.price > 0){
+            name += ` (${event.price} sek)`
+        }
+
+        return name
+    }
+
     return <Template>
         <Container disableGutters maxWidth="sm" component="main" sx={{ pt: 8, pb: 6 }}>
             <Typography
@@ -191,7 +211,8 @@ export function SingleEvent() {
                 align="center"
                 color="text.primary"
                 gutterBottom
-            >{event?.name}</Typography>
+            >{getEventName()}
+            </Typography>
             {getEvent()}
         </Container>
         <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>

@@ -1,4 +1,4 @@
-import { Event } from "./model";
+import { Event, PaymentLink } from "./model";
 import Cookies from 'universal-cookie';
 
 const API = "https://booking.ramonmedeiros.dev"
@@ -80,6 +80,28 @@ export function RemoveAttendee(date: string): Promise<void | Event | null | unde
             const event = data as Event
             event.date = new Date(event.date)
             return event
+        });
+}
+
+export function GetPaymentLink(date: string): Promise<void | PaymentLink | null | undefined> {
+    const url = new URL(`/event/${date}/payment`, API)
+    let token = undefined
+    try {
+        token = GetToken()
+    } catch {
+        return Promise.reject("token not found")
+    }
+
+    return fetch(url, {
+        method: "GET",
+        headers: {
+            "Authorization": `Bearer ${token}`,
+        },
+    })
+        .then(response => response.json())
+        .then(data => {
+            const paymentLink = data as PaymentLink
+            return paymentLink
         });
 }
 
