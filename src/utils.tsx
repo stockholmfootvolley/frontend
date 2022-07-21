@@ -25,7 +25,10 @@ export function GetEvents(): Promise<void | Event[] | null | undefined> {
                 event.date = new Date(event.date)
             });
             return events
-        });
+        })
+        .catch(error =>{
+            console.log(error)
+        })
 }
 
 export function GetSpecificEvent(date: string): Promise<void | Event | null | undefined> {
@@ -48,10 +51,13 @@ export function GetSpecificEvent(date: string): Promise<void | Event | null | un
             const event = data as Event
             event.date = new Date(event.date)
             return event
-        });
+        })
+        .catch(error =>{
+            console.log(error)
+        })
 }
 
-export function AddAttendee(date: string): Promise<void | Event | null | undefined> {
+export function AddAttendee(date: string): Promise<void | Event | PaymentLink | null | undefined> {
     const url = new URL(`/event/${date}`, API)
     return fetch(url, {
         headers: {
@@ -59,12 +65,19 @@ export function AddAttendee(date: string): Promise<void | Event | null | undefin
         },
         method: "POST",
     })
-        .then(response => response.json())
-        .then(data => {
-            const event = data as Event
+        .then(response => {
+            const data = response.json()
+            if (response.status === 307){
+                return data as unknown as PaymentLink
+            }
+
+            const event = data as unknown as Event
             event.date = new Date(event.date)
             return event
-        });
+        })
+        .catch(error =>{
+            console.log(error)
+        })
 }
 
 export function RemoveAttendee(date: string): Promise<void | Event | null | undefined> {
@@ -80,29 +93,10 @@ export function RemoveAttendee(date: string): Promise<void | Event | null | unde
             const event = data as Event
             event.date = new Date(event.date)
             return event
-        });
-}
-
-export function GetPaymentLink(date: string): Promise<void | PaymentLink | null | undefined> {
-    const url = new URL(`/event/${date}/payment`, API)
-    let token = undefined
-    try {
-        token = GetToken()
-    } catch {
-        return Promise.reject("token not found")
-    }
-
-    return fetch(url, {
-        method: "GET",
-        headers: {
-            "Authorization": `Bearer ${token}`,
-        },
-    })
-        .then(response => response.json())
-        .then(data => {
-            const paymentLink = data as PaymentLink
-            return paymentLink
-        });
+        })
+        .catch(error =>{
+            console.log(error)
+        })
 }
 
 export function GetToken(): string {

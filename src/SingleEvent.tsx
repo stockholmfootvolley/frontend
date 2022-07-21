@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react"
 import { Container, Typography, Grid, Box, Card, CardActions, CardContent, CardHeader, Fab, Snackbar, } from "@mui/material"
 import { Link, useParams, } from "react-router-dom"
 import { Template } from "./template"
-import { GetSpecificEvent, AddAttendee, RemoveAttendee, GetToken, showDate, showTime, GetPaymentLink } from "./utils"
+import { GetSpecificEvent, AddAttendee, RemoveAttendee, GetToken, showDate, showTime } from "./utils"
 import { Event, Attendee, PaymentLink } from "./model"
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import PersonRemoveIcon from '@mui/icons-material/PersonRemove';
@@ -52,19 +52,17 @@ export function SingleEvent() {
             return
         }
 
-        if (event.price > 0) {
-            GetPaymentLink(params.date as string).then(response => {
+        AddAttendee(params.date as string).then(response => {
+            if (Object.hasOwn(response as Object, "payment_link")) {
                 const link = response as PaymentLink
                 window.location.href = link.payment_link
-            })
-                .catch(error => {
-                    setErrorMessage("Could not fetch payment")
-                    setOpen(true)
-                })
-        }
+            } else {
+                const event = response as Event
+                event.date = new Date(event.date)
+                setEvent(event)
+                return
+            }
 
-        AddAttendee(params.date as string).then(response => {
-            setEvent(response as Event)
         })
             .catch(error => {
                 console.log(error)
@@ -162,7 +160,6 @@ export function SingleEvent() {
             return
         }
 
-        debugger
         let normalList = [] as JSX.Element[]
         let normalSlice = attendees.slice(0, event.max_participants)
         normalSlice.forEach(attendee => {
@@ -195,7 +192,7 @@ export function SingleEvent() {
 
     function getEventName(): string {
         let name = event?.name
-        if (event.price > 0){
+        if (event.price > 0) {
             name += ` (${event.price} sek)`
         }
 
