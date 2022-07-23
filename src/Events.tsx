@@ -4,6 +4,7 @@ import { GetEvents, showDateAndTime } from "./utils"
 import { Event } from "./model"
 import { Grid, Card, CardHeader, CardContent, Box, Typography, CardActions, Container, Alert, Snackbar } from "@mui/material"
 import { Link } from "react-router-dom";
+import { grey } from '@mui/material/colors';
 
 export function Events() {
   const [events, setEvents] = useState<Event[]>([])
@@ -32,10 +33,10 @@ export function Events() {
 
   function handleClose(newEvent?: any, reason?: string) {
     if (reason === 'clickaway') {
-        return;
+      return;
     }
     setOpen(false);
-};
+  };
 
   function getEvents(): JSX.Element {
     return <React.Fragment>
@@ -63,6 +64,9 @@ export function Events() {
                     theme.palette.mode === 'light'
                       ? theme.palette.grey[200]
                       : theme.palette.grey[700],
+                  '&:hover': {
+                    bgcolor: grey[300],
+                  },
                 }}
               />
             </Link>
@@ -113,10 +117,10 @@ export function Events() {
         {getEvents()}
       </Grid>
       <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
-            <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
-                {errorMessage}
-            </Alert>
-        </Snackbar>
+        <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
+          {errorMessage}
+        </Alert>
+      </Snackbar>
     </Container>
   </Template>
 }

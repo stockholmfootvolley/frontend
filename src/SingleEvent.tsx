@@ -8,7 +8,7 @@ import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import PersonRemoveIcon from '@mui/icons-material/PersonRemove';
 import { Helmet } from "react-helmet";
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
-import { blue } from '@mui/material/colors';
+import { blue, grey } from '@mui/material/colors';
 
 const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
     props,
@@ -147,6 +147,9 @@ export function SingleEvent() {
                         theme.palette.mode === 'light'
                             ? theme.palette.grey[200]
                             : theme.palette.grey[700],
+                    '&:hover': {
+                        bgcolor: grey[300],
+                    },
                 }}
             />
             <CardContent>
