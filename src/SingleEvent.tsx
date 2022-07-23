@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react"
 import { Container, Typography, Grid, Box, Card, CardActions, CardContent, CardHeader, Fab, Snackbar, CircularProgress, } from "@mui/material"
 import { Link, useParams, } from "react-router-dom"
 import { Template } from "./template"
-import { GetSpecificEvent, AddAttendee, RemoveAttendee, GetToken, showDate, showTime } from "./utils"
+import { GetSpecificEvent, AddAttendee, RemoveAttendee, showDate, showTime } from "./utils"
 import { Event, Attendee, PaymentLink } from "./model"
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import PersonRemoveIcon from '@mui/icons-material/PersonRemove';
@@ -25,6 +25,8 @@ export function SingleEvent() {
     const [cookies, setCookie] = React.useState(document.cookie)
 
     const [loading, setLoading] = React.useState(false);
+    const [loadingRemove, setloadingRemove] = React.useState(false);
+
     const [success, setSuccess] = React.useState(false);
 
     const buttonSx = {
@@ -60,15 +62,9 @@ export function SingleEvent() {
     };
 
     function addAttendee() {
-        if (GetToken() === undefined) {
-            setErrorMessage("User is not authenticated")
-            setOpen(true)
-            return
-        }
-
         if (!loading) {
-            setSuccess(false);
-            setLoading(true);
+            setSuccess(false)
+            setLoading(true)
         }
 
         AddAttendee(params.date as string).then(response => {
@@ -79,27 +75,30 @@ export function SingleEvent() {
                 const event = response as Event
                 event.date = new Date(event.date)
                 setEvent(event)
+                setLoading(false)
                 return
             }
 
         })
             .catch(error => {
-                console.error(error)
+                setErrorMessage("You seem to no be authenticated")
+                setOpen(true)
             })
-
     }
 
     function removeAttendee() {
-        if (GetToken() === undefined) {
-            setErrorMessage("User is not authenticated")
-            setOpen(true)
-            return
+        if (!loading) {
+            setSuccess(false)
+            setloadingRemove(true)
         }
+
         RemoveAttendee(params.date as string).then(response => {
             setEvent(response as Event)
+            setloadingRemove(false)
         })
             .catch(error => {
-                console.error(error)
+                setErrorMessage("You seem to no be authenticated")
+                setOpen(true)
             })
     }
 
@@ -179,10 +178,26 @@ export function SingleEvent() {
                             />
                         )}
                     </Box>
-                    <Fab onClick={removeAttendee} color="primary" aria-label="remove" variant="extended">
-                        <PersonRemoveIcon />
-                        &nbsp;&nbsp;I will not attend
-                    </Fab>
+                    <Box sx={{ m: 1, position: 'relative' }}>
+
+                        <Fab onClick={removeAttendee} color="primary" aria-label="remove" variant="extended" disabled={loadingRemove}>
+                            <PersonRemoveIcon />
+                            &nbsp;&nbsp;I will not attend
+                        </Fab>
+                        {loadingRemove && (
+                            <CircularProgress
+                                size={68}
+                                sx={{
+                                    color: green[500],
+                                    position: 'absolute',
+                                    top: -6,
+                                    left: -6,
+                                    zIndex: 1,
+                                }}
+                            />
+                        )}
+                    </Box>
+
                 </Box>
             </CardContent>
             <CardActions>
