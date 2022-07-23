@@ -7,6 +7,7 @@ import Typography from '@mui/material/Typography';
 import Link from '@mui/material/Link';
 import GlobalStyles from '@mui/material/GlobalStyles';
 import Container from '@mui/material/Container';
+import GoogleSignin from './GoogleSignin';
 
 
 const footers = [
@@ -42,7 +43,7 @@ export function Template(props: any) {
           <Typography variant="h6" color="inherit" noWrap sx={{ flexGrow: 1 }}>
             <Link href="https://stockholmfootvolley.github.io/frontend/">Booking - Stockholm Footvolley</Link>
           </Typography>
-          <div id="buttonDiv"></div>
+          <GoogleSignin/>
         </Toolbar>
       </AppBar>
       {props.children}

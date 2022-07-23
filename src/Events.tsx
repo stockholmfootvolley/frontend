@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react"
 import { Template } from "./template"
-import { GetEvents, showDateAndTime } from "./utils"
+import { GetEvents, GetToken, showDateAndTime } from "./utils"
 import { Event } from "./model"
 import { Grid, Card, CardHeader, CardContent, Box, Typography, CardActions, Container, Alert, Snackbar } from "@mui/material"
 import { Link } from "react-router-dom";
@@ -25,7 +25,9 @@ export function Events() {
         setEvents(response as Event[])
       }
     }).catch(e => {
-      setErrorMessage("You are not a member. Wanna join us?")
+      if (GetToken() === "") {
+        setErrorMessage("You are not a member. Wanna join us?")
+      }
       setOpen(true)
     })
 

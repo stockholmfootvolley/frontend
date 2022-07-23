@@ -5,10 +5,8 @@ const API = "https://booking.ramonmedeiros.dev"
 
 export function GetEvents(): Promise<void | Event[] | null | undefined> {
     const url = new URL("/events", API)
-    let token = undefined
-    try {
-        token = GetToken()
-    } catch {
+    let token = GetToken()
+    if (token === undefined) {
         return Promise.reject("token not found")
     }
 
@@ -32,10 +30,8 @@ export function GetEvents(): Promise<void | Event[] | null | undefined> {
 }
 
 export function GetSpecificEvent(date: string): Promise<void | Event | null | undefined> {
-    let token = undefined
-    try {
-        token = GetToken()
-    } catch {
+    let token = GetToken()
+    if (token === undefined) {
         return Promise.reject("token not found")
     }
 
@@ -101,13 +97,7 @@ export function RemoveAttendee(date: string): Promise<void | Event | null | unde
 
 export function GetToken(): string {
     const cookies = new Cookies();
-    let value = cookies.get("token")
-
-    if (value === undefined) {
-        throw new Error("token not found")
-    }
-
-    return value
+    return cookies.get("token")
 }
 
 export function showDateAndTime(date: Date): string {
