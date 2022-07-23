@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react"
-import { Container, Typography, Grid, Box, Card, CardActions, CardContent, CardHeader, Fab, Snackbar, } from "@mui/material"
+import { Container, Typography, Grid, Box, Card, CardActions, CardContent, CardHeader, Fab, Snackbar, CircularProgress, } from "@mui/material"
 import { Link, useParams, } from "react-router-dom"
 import { Template } from "./template"
 import { GetSpecificEvent, AddAttendee, RemoveAttendee, GetToken, showDate, showTime } from "./utils"
@@ -8,6 +8,7 @@ import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import PersonRemoveIcon from '@mui/icons-material/PersonRemove';
 import { Helmet } from "react-helmet";
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
+import { green } from '@mui/material/colors';
 
 const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
     props,
@@ -23,6 +24,18 @@ export function SingleEvent() {
     const [errorMessage, setErrorMessage] = useState("")
     const [cookies, setCookie] = React.useState(document.cookie)
 
+    const [loading, setLoading] = React.useState(false);
+    const [success, setSuccess] = React.useState(false);
+
+    const buttonSx = {
+        ...(success && {
+            bgcolor: green[500],
+            '&:hover': {
+                bgcolor: green[700],
+            },
+        }),
+    };
+
     useEffect(() => {
         const updateCookies = () => {
             if (cookies.length !== document.cookie.length) {
@@ -36,6 +49,7 @@ export function SingleEvent() {
                 setEvent(response as Event)
             }
         })
+
     }, [params.date, cookies])
 
     function handleClose(newEvent?: any, reason?: string) {
@@ -50,6 +64,11 @@ export function SingleEvent() {
             setErrorMessage("User is not authenticated")
             setOpen(true)
             return
+        }
+
+        if (!loading) {
+            setSuccess(false);
+            setLoading(true);
         }
 
         AddAttendee(params.date as string).then(response => {
@@ -67,6 +86,7 @@ export function SingleEvent() {
             .catch(error => {
                 console.error(error)
             })
+
     }
 
     function removeAttendee() {
@@ -140,10 +160,25 @@ export function SingleEvent() {
                     }}
                 >
                     {getAttendes(event?.attendees)}
-                    <Fab onClick={addAttendee} color="primary" aria-label="add" variant="extended">
-                        <PersonAddIcon />
-                        &nbsp;&nbsp;I'm Coming
-                    </Fab>
+                    <Box sx={{ m: 1, position: 'relative' }}>
+
+                        <Fab onClick={addAttendee} sx={buttonSx} color="primary" aria-label="add" variant="extended" disabled={loading}>
+                            <PersonAddIcon />
+                            &nbsp;&nbsp;I'm Coming
+                        </Fab>
+                        {loading && (
+                            <CircularProgress
+                                size={68}
+                                sx={{
+                                    color: green[500],
+                                    position: 'absolute',
+                                    top: -6,
+                                    left: -6,
+                                    zIndex: 1,
+                                }}
+                            />
+                        )}
+                    </Box>
                     <Fab onClick={removeAttendee} color="primary" aria-label="remove" variant="extended">
                         <PersonRemoveIcon />
                         &nbsp;&nbsp;I will not attend
