@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react"
 import { Template } from "./template"
-import { GetEvents, GetToken, showDateAndTime } from "./utils"
+import { GetEvents, NotAMember, showDateAndTime, TokenNotFound } from "./utils"
 import { Event } from "./model"
 import { Grid, Card, CardHeader, CardContent, Box, Typography, CardActions, Container, Alert, Snackbar } from "@mui/material"
 import { Link } from "react-router-dom";
@@ -16,6 +16,7 @@ export function Events() {
     const updateCookies = () => {
       if (cookies.length !== document.cookie.length) {
         setCookie(document.cookie)
+        setOpen(false)
       }
     }
     window.setInterval(updateCookies, 100)
@@ -25,9 +26,22 @@ export function Events() {
         setEvents(response as Event[])
       }
     }).catch(e => {
-      if (GetToken() === "") {
-        setErrorMessage("You are not a member. Wanna join us?")
+      debugger
+      switch (e) {
+        case TokenNotFound: {
+          setErrorMessage("Login with Google before continue")
+          break
+        }
+        case NotAMember: {
+          setErrorMessage("You are not a member. Wanna join us?")
+          break
+        }
+        default: {
+          setErrorMessage("Could not fetch events")
+          break
+        }
       }
+
       setOpen(true)
     })
 

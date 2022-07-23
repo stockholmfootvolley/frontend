@@ -31,7 +31,7 @@ export default function GoogleSignin() {
             }
         )
 
-        if ((GetToken() === undefined)) {
+        if ((user === false && GetToken() === undefined)) {
             //@ts-ignore it.
             window.google?.accounts.id.prompt()
         }

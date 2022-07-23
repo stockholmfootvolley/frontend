@@ -2,12 +2,14 @@ import { Event, PaymentLink } from "./model";
 import Cookies from 'universal-cookie';
 
 const API = "https://booking.ramonmedeiros.dev"
+export const TokenNotFound = "token not found"
+export const NotAMember = "not a member"
 
 export function GetEvents(): Promise<void | Event[] | null | undefined> {
     const url = new URL("/events", API)
     let token = GetToken()
     if (token === undefined) {
-        return Promise.reject("token not found")
+        return Promise.reject(TokenNotFound)
     }
 
     return fetch(url, {
@@ -16,23 +18,28 @@ export function GetEvents(): Promise<void | Event[] | null | undefined> {
             "Authorization": `Bearer ${token}`,
         },
     })
-        .then(response => response.json())
-        .then(data => {
-            const events = data as Event[]
-            events.forEach(event => {
-                event.date = new Date(event.date)
-            });
-            return events
+        .then(response => {
+            if (response.status === 401) {
+                return Promise.reject(NotAMember)
+            }
+
+            response.json().then(data => {
+                const events = data as Event[]
+                events.forEach(event => {
+                    event.date = new Date(event.date)
+                });
+                return events
+            })
         })
-        .catch(error =>{
-            console.error(error)
+        .catch(error => {
+            return Promise.reject(error)
         })
 }
 
 export function GetSpecificEvent(date: string): Promise<void | Event | null | undefined> {
     let token = GetToken()
     if (token === undefined) {
-        return Promise.reject("token not found")
+        return Promise.reject(TokenNotFound)
     }
 
     const url = new URL(`/event/${date}`, API)
@@ -48,7 +55,7 @@ export function GetSpecificEvent(date: string): Promise<void | Event | null | un
             event.date = new Date(event.date)
             return event
         })
-        .catch(error =>{
+        .catch(error => {
             console.error(error)
         })
 }
@@ -63,7 +70,7 @@ export function AddAttendee(date: string): Promise<void | Event | PaymentLink | 
     })
         .then(response => {
             const data = response.json()
-            if (response.status === 307){
+            if (response.status === 307) {
                 return data as unknown as PaymentLink
             }
 
@@ -71,7 +78,7 @@ export function AddAttendee(date: string): Promise<void | Event | PaymentLink | 
             event.date = new Date(event.date)
             return event
         })
-        .catch(error =>{
+        .catch(error => {
             console.error(error)
         })
 }
@@ -90,7 +97,7 @@ export function RemoveAttendee(date: string): Promise<void | Event | null | unde
             event.date = new Date(event.date)
             return event
         })
-        .catch(error =>{
+        .catch(error => {
             console.error(error)
         })
 }
@@ -109,7 +116,7 @@ export function showDateAndTime(date: Date): string {
 export function showDate(date: Date): string {
     if (date === undefined)
         return ""
-    return `${date.getFullYear()}-${getZeroInFront(date.getMonth()+1)}-${getZeroInFront(date.getUTCDate())}`
+    return `${date.getFullYear()}-${getZeroInFront(date.getMonth() + 1)}-${getZeroInFront(date.getUTCDate())}`
 }
 
 export function showTime(date: Date): string {
