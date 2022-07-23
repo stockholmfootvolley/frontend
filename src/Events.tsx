@@ -2,12 +2,14 @@ import React, { useEffect, useState } from "react"
 import { Template } from "./template"
 import { GetEvents, showDateAndTime } from "./utils"
 import { Event } from "./model"
-import { Grid, Card, CardHeader, CardContent, Box, Typography, CardActions, Container } from "@mui/material"
+import { Grid, Card, CardHeader, CardContent, Box, Typography, CardActions, Container, Alert, Snackbar } from "@mui/material"
 import { Link } from "react-router-dom";
 
 export function Events() {
   const [events, setEvents] = useState<Event[]>([])
   const [cookies, setCookie] = React.useState(document.cookie)
+  const [open, setOpen] = React.useState(false)
+  const [errorMessage, setErrorMessage] = useState("")
 
   useEffect(() => {
     const updateCookies = () => {
@@ -22,10 +24,18 @@ export function Events() {
         setEvents(response as Event[])
       }
     }).catch(e => {
-      console.log(e)
+      setErrorMessage("You are not a member. Wanna join us?")
+      setOpen(true)
     })
 
   }, [cookies])
+
+  function handleClose(newEvent?: any, reason?: string) {
+    if (reason === 'clickaway') {
+        return;
+    }
+    setOpen(false);
+};
 
   function getEvents(): JSX.Element {
     return <React.Fragment>
@@ -102,6 +112,11 @@ export function Events() {
       <Grid container spacing={5} alignItems="flex-end">
         {getEvents()}
       </Grid>
+      <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+            <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
+                {errorMessage}
+            </Alert>
+        </Snackbar>
     </Container>
   </Template>
 }

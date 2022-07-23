@@ -11,27 +11,19 @@ import Container from '@mui/material/Container';
 
 const footers = [
   {
-    title: 'Company',
-    description: ['Team', 'History', 'Contact us', 'Locations'],
-  },
-  {
-    title: 'Features',
+    title: 'Socials',
     description: [
-      'Cool stuff',
-      'Random feature',
-      'Team feature',
-      'Developer stuff',
-      'Another one',
+      {
+        name: 'Instagram',
+        link: 'https://www.instagram.com/footvolleystockholm/',
+      },
+      {
+        name: 'Facebook',
+        link: 'https://www.facebook.com/stockholmfootvolleyclub',
+      },
     ],
   },
-  {
-    title: 'Resources',
-    description: ['Resource', 'Resource name', 'Another resource', 'Final resource'],
-  },
-  {
-    title: 'Legal',
-    description: ['Privacy policy', 'Terms of use'],
-  },
+
 ];
 
 export function Template(props: any) {
@@ -71,9 +63,9 @@ export function Template(props: any) {
               </Typography>
               <ul>
                 {footer.description.map((item) => (
-                  <li key={item}>
-                    <Link href="#" variant="subtitle1" color="text.secondary">
-                      {item}
+                  <li key={item.name}>
+                    <Link href={item.link} variant="subtitle1" color="text.secondary">
+                      {item.name}
                     </Link>
                   </li>
                 ))}

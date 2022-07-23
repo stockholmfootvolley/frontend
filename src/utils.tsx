@@ -27,7 +27,7 @@ export function GetEvents(): Promise<void | Event[] | null | undefined> {
             return events
         })
         .catch(error =>{
-            console.log(error)
+            console.error(error)
         })
 }
 
@@ -53,7 +53,7 @@ export function GetSpecificEvent(date: string): Promise<void | Event | null | un
             return event
         })
         .catch(error =>{
-            console.log(error)
+            console.error(error)
         })
 }
 
@@ -76,7 +76,7 @@ export function AddAttendee(date: string): Promise<void | Event | PaymentLink | 
             return event
         })
         .catch(error =>{
-            console.log(error)
+            console.error(error)
         })
 }
 
@@ -95,7 +95,7 @@ export function RemoveAttendee(date: string): Promise<void | Event | null | unde
             return event
         })
         .catch(error =>{
-            console.log(error)
+            console.error(error)
         })
 }
 

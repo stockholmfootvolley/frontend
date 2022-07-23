@@ -65,7 +65,7 @@ export function SingleEvent() {
 
         })
             .catch(error => {
-                console.log(error)
+                console.error(error)
             })
     }
 
@@ -79,7 +79,7 @@ export function SingleEvent() {
             setEvent(response as Event)
         })
             .catch(error => {
-                console.log(error)
+                console.error(error)
             })
     }
 
