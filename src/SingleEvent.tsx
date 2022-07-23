@@ -8,7 +8,7 @@ import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import PersonRemoveIcon from '@mui/icons-material/PersonRemove';
 import { Helmet } from "react-helmet";
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
-import { green } from '@mui/material/colors';
+import { blue } from '@mui/material/colors';
 
 const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
     props,
@@ -31,9 +31,9 @@ export function SingleEvent() {
 
     const buttonSx = {
         ...(success && {
-            bgcolor: green[500],
+            bgcolor: blue[500],
             '&:hover': {
-                bgcolor: green[700],
+                bgcolor: blue[700],
             },
         }),
     };
@@ -169,7 +169,7 @@ export function SingleEvent() {
                             <CircularProgress
                                 size={68}
                                 sx={{
-                                    color: green[500],
+                                    color: blue[500],
                                     position: 'absolute',
                                     top: -6,
                                     left: -6,
@@ -188,7 +188,7 @@ export function SingleEvent() {
                             <CircularProgress
                                 size={68}
                                 sx={{
-                                    color: green[500],
+                                    color: blue[500],
                                     position: 'absolute',
                                     top: -6,
                                     left: -6,
