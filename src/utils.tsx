@@ -23,7 +23,7 @@ export function GetEvents(): Promise<void | Event[] | null | undefined> {
                 return Promise.reject(NotAMember)
             }
 
-            response.json().then(data => {
+            return response.json().then(data => {
                 const events = data as Event[]
                 events.forEach(event => {
                     event.date = new Date(event.date)

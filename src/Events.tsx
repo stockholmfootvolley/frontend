@@ -26,7 +26,6 @@ export function Events() {
         setEvents(response as Event[])
       }
     }).catch(e => {
-      debugger
       switch (e) {
         case TokenNotFound: {
           setErrorMessage("Login with Google before continue")
