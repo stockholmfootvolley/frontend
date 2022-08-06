@@ -8,13 +8,15 @@ import {
 import { Events } from './Events';
 import { SingleEvent } from './SingleEvent';
 import reportWebVitals from './reportWebVitals';
+import { Login } from './Login';
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 root.render(
   <React.Fragment>
     <Router >
       <Routes>
-        <Route path="/">
+        <Route path="/" element={<Login />} />
+        <Route path="/events">
           <Route path="" element={<Events />} />
           <Route path=":date" element={<SingleEvent />} />
         </Route>

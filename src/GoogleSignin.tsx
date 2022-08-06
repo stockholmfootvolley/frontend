@@ -1,7 +1,7 @@
 import { Button } from "@mui/material"
 import React, { useEffect, useState } from "react"
 import Cookies from 'universal-cookie';
-import { GetToken } from "./utils";
+import { GetToken, ParseJWTToken } from "./utils";
 
 export default function GoogleSignin() {
     const [user, setUser] = useState(false)
@@ -9,7 +9,11 @@ export default function GoogleSignin() {
     const handleGoogleSignIn = React.useCallback((res: CredentialResponse) => {
         if (!res.clientId || !res.credential) return
         const cookies = new Cookies();
-        cookies.set("token", res.credential, { secure: true, sameSite: "strict" })
+
+        let payload = ParseJWTToken(res.credential)
+        let expires = new Date(payload.exp * 1000)
+
+        cookies.set("token", res.credential, { secure: true, sameSite: "strict", expires: expires })
         setUser(true)
     }, [])
 
@@ -26,7 +30,7 @@ export default function GoogleSignin() {
             document.getElementById("g_id_signin"),
             {
                 theme: "filled_black",
-                shape: "pill",
+                shape: "rectangular",
                 size: "large"
             }
         )

@@ -50,6 +50,8 @@ export function SingleEvent() {
             if ((response !== undefined) && (response !== null)) {
                 setEvent(response as Event)
             }
+        }).catch(e =>{
+            window.location.hash = "/"
         })
 
     }, [params.date, cookies])

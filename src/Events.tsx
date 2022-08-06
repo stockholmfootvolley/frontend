@@ -28,7 +28,7 @@ export function Events() {
     }).catch(e => {
       switch (e) {
         case TokenNotFound: {
-          setErrorMessage("Login with Google before continue")
+          window.location.hash = "/"
           break
         }
         case NotAMember: {

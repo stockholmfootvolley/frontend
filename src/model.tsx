@@ -19,3 +19,9 @@ export interface Attendee {
 export interface PaymentLink {
     payment_link: string
 }
+
+export interface User {
+    name: string
+    email: string
+    level: string
+}

@@ -1,5 +1,6 @@
-import { Event, PaymentLink } from "./model";
+import { Event, PaymentLink, User } from "./model";
 import Cookies from 'universal-cookie';
+import * as jose from 'jose'
 
 const API = "https://booking.ramonmedeiros.dev"
 export const TokenNotFound = "token not found"
@@ -60,6 +61,29 @@ export function GetSpecificEvent(date: string): Promise<void | Event | null | un
         })
 }
 
+export function GetUser(): Promise<void | User | null | undefined> {
+    let token = GetToken()
+    if (token === undefined) {
+        return Promise.reject(TokenNotFound)
+    }
+
+    const url = new URL(`/user`, API)
+    return fetch(url, {
+        method: "GET",
+        headers: {
+            "Authorization": `Bearer ${token}`,
+        },
+    })
+        .then(response => response.json())
+        .then(data => {
+            const user = data as User
+            return user
+        })
+        .catch(error => {
+            console.error(error)
+        })
+}
+
 export function AddAttendee(date: string): Promise<void | Event | PaymentLink | null | undefined> {
     const url = new URL(`/event/${date}`, API)
     return fetch(url, {
@@ -102,9 +126,13 @@ export function RemoveAttendee(date: string): Promise<void | Event | null | unde
         })
 }
 
-export function GetToken(): string {
+export function GetToken(): string | undefined {
     const cookies = new Cookies();
     return cookies.get("token")
+}
+
+export function ParseJWTToken(token: string): any {
+    return jose.decodeJwt(token) as any
 }
 
 export function showDateAndTime(date: Date): string {

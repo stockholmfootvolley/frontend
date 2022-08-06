@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { AppBar } from '@mui/material';
+import { AppBar, Avatar } from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 import Grid from '@mui/material/Grid';
 import Toolbar from '@mui/material/Toolbar';
@@ -7,8 +7,7 @@ import Typography from '@mui/material/Typography';
 import Link from '@mui/material/Link';
 import GlobalStyles from '@mui/material/GlobalStyles';
 import Container from '@mui/material/Container';
-import GoogleSignin from './GoogleSignin';
-
+import { ParseJWTToken, GetToken } from './utils';
 
 const footers = [
   {
@@ -29,6 +28,45 @@ const footers = [
 
 export function Template(props: any) {
 
+  function stringToColor(string: string) {
+    let hash = 0;
+    let i;
+  
+    /* eslint-disable no-bitwise */
+    for (i = 0; i < string.length; i += 1) {
+      hash = string.charCodeAt(i) + ((hash << 5) - hash);
+    }
+  
+    let color = '#';
+  
+    for (i = 0; i < 3; i += 1) {
+      const value = (hash >> (i * 8)) & 0xff;
+      color += `00${value.toString(16)}`.slice(-2);
+    }
+    /* eslint-enable no-bitwise */
+  
+    return color;
+  }
+  
+
+  function stringAvatar(name: string) {
+    return {
+      sx: {
+        bgcolor: stringToColor(name),
+      },
+      children: `${name.split(' ')[0][0]}${name.split(' ')[1][0]}`,
+    };
+  }
+
+  function GetUserInfo(){
+    let payload = ParseJWTToken(GetToken() as string)
+
+    return <React.Fragment>
+      <Typography>{payload?.name}&nbsp;</Typography>
+        <Avatar alt={payload?.name} {...stringAvatar(payload?.name)} src={payload?.picture} />
+      </React.Fragment>
+  }
+
   return (
     <React.Fragment>
       <GlobalStyles styles={{ ul: { margin: 0, padding: 0, listStyle: 'none' } }} />
@@ -43,7 +81,7 @@ export function Template(props: any) {
           <Typography variant="h6" color="inherit" noWrap sx={{ flexGrow: 1 }}>
             <Link href="https://stockholmfootvolley.github.io/frontend/">Booking - Stockholm Footvolley</Link>
           </Typography>
-          <GoogleSignin/>
+          {GetUserInfo()}
         </Toolbar>
       </AppBar>
       {props.children}
@@ -56,7 +94,10 @@ export function Template(props: any) {
           py: [3, 6],
         }}
       >
-        <Grid container spacing={4} justifyContent="space-evenly">
+        <Grid sx={{
+          display: 'center',
+          justifyContent: 'center',
+        }}>
           {footers.map((footer) => (
             <Grid item xs={6} sm={3} key={footer.title}>
               <Typography variant="h6" color="text.primary" gutterBottom>
@@ -78,5 +119,3 @@ export function Template(props: any) {
     </React.Fragment>
   );
 }
-
-
