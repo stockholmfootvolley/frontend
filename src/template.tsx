@@ -49,7 +49,13 @@ export function Template(props: any) {
   }
   
 
-  function stringAvatar(name: string) {
+  function stringAvatar(jwtPayload: any) {
+    if (jwtPayload?.picture !== undefined){
+      return
+    }
+
+    let name = jwtPayload?.name
+
     return {
       sx: {
         bgcolor: stringToColor(name),
@@ -59,11 +65,16 @@ export function Template(props: any) {
   }
 
   function GetUserInfo(){
-    let payload = ParseJWTToken(GetToken() as string)
+    let token = GetToken()
+    if (token === undefined){
+      return
+    }
 
+    let payload = ParseJWTToken(token)
+console.log(payload)
     return <React.Fragment>
       <Typography>{payload?.name}&nbsp;</Typography>
-        <Avatar alt={payload?.name} {...stringAvatar(payload?.name)} src={payload?.picture} />
+        <Avatar alt={payload?.name} {...stringAvatar(payload)} src={payload?.picture} />
       </React.Fragment>
   }
 

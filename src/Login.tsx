@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
 import { Template } from "./template"
 import { GetUser, NotAMember, TokenNotFound } from "./utils"
-import { Typography, Container, Alert, Snackbar, Box, Card, CardActions, CardContent } from "@mui/material"
+import { Typography, Container, Alert, Snackbar, Box, Card, CardContent, LinearProgress } from "@mui/material"
 import GoogleSignin from "./GoogleSignin"
 
 export function Login() {
@@ -9,6 +9,7 @@ export function Login() {
     const [open, setOpen] = React.useState(false)
     const [errorMessage, setErrorMessage] = useState("")
     const [allowLogin, setAllowLogin] = useState(false)
+    const [inProgress, setInProgress] = useState(true)
 
     useEffect(() => {
         const updateCookies = () => {
@@ -20,6 +21,7 @@ export function Login() {
         window.setInterval(updateCookies, 100)
 
         GetUser().then(response => {
+            setInProgress(false)
             if ((response !== undefined) && (response !== null)) {
                 window.location.hash = "/events"
             }
@@ -27,6 +29,7 @@ export function Login() {
             switch (e) {
                 case TokenNotFound: {
                     setAllowLogin(true)
+                    setInProgress(false)
                     setErrorMessage("Login with Google before continue")
                     break
                 }
@@ -52,16 +55,17 @@ export function Login() {
     };
 
     function GetLoginButtons() {
-        if (!allowLogin){
+        if (!allowLogin) {
             return
         }
-
         return <GoogleSignin />
     }
 
-    return <Template google={<GoogleSignin />}>
+    return <Template>
         <Container disableGutters maxWidth="sm" component="main" sx={{ pt: 8, pb: 6 }}>
+            {inProgress && <LinearProgress />}
             <Typography
+                hidden={inProgress}
                 component="h1"
                 variant="h2"
                 align="center"
@@ -70,12 +74,13 @@ export function Login() {
             >
                 Login
             </Typography>
+
         </Container>
-        {/* End hero unit */}
-        <Container maxWidth="md" component="main">
-            <Card>
-                <CardContent>
+        <Container hidden={inProgress} maxWidth="md" component="main">
+            <Card hidden={inProgress}>
+                <CardContent hidden={inProgress}>
                     <Box
+                        hidden={inProgress}
                         sx={{
                             display: 'center',
                             justifyContent: 'center',
@@ -86,8 +91,6 @@ export function Login() {
                         {GetLoginButtons()}
                     </Box>
                 </CardContent>
-                <CardActions>
-                </CardActions>
             </Card>
             <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
                 <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
