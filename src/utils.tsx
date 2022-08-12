@@ -141,7 +141,7 @@ export function SetUserPicture(token: string, callback:Function) {
         callback(jwtToken.name, jwtToken.picture )
         // likely to be FB token
     } catch (JWTInvalid) {
-        let a = GetFacebookTokenInfo(token, callback)
+        GetFacebookTokenInfo(token, callback)
     }
 }
 
