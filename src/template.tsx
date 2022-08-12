@@ -7,7 +7,7 @@ import Typography from '@mui/material/Typography';
 import Link from '@mui/material/Link';
 import GlobalStyles from '@mui/material/GlobalStyles';
 import Container from '@mui/material/Container';
-import { ParseJWTToken, GetToken } from './utils';
+import { GetToken, SetUserPicture } from './utils';
 
 const footers = [
   {
@@ -27,56 +27,27 @@ const footers = [
 ];
 
 export function Template(props: any) {
+  const [node, setNode] = React.useState<JSX.Element[]>([])
 
-  function stringToColor(string: string) {
-    let hash = 0;
-    let i;
-  
-    /* eslint-disable no-bitwise */
-    for (i = 0; i < string.length; i += 1) {
-      hash = string.charCodeAt(i) + ((hash << 5) - hash);
-    }
-  
-    let color = '#';
-  
-    for (i = 0; i < 3; i += 1) {
-      const value = (hash >> (i * 8)) & 0xff;
-      color += `00${value.toString(16)}`.slice(-2);
-    }
-    /* eslint-enable no-bitwise */
-  
-    return color;
-  }
-  
-
-  function stringAvatar(jwtPayload: any) {
-    if (jwtPayload?.picture !== undefined){
-      return
-    }
-
-    let name = jwtPayload?.name
-
-    return {
-      sx: {
-        bgcolor: stringToColor(name),
-      },
-      children: `${name.split(' ')[0][0]}${name.split(' ')[1][0]}`,
-    };
+  function CreateAvatar(name: string, picture: string) {
+    setNode([
+      <React.Fragment>
+        <Typography>{name}&nbsp;</Typography><Avatar alt={name} src={picture} />
+      </React.Fragment>])
   }
 
-  function GetUserInfo(){
+  function SetUserInfo() {
     let token = GetToken()
-    if (token === undefined){
+    if (token === undefined) {
       return
     }
 
-    let payload = ParseJWTToken(token)
-console.log(payload)
-    return <React.Fragment>
-      <Typography>{payload?.name}&nbsp;</Typography>
-        <Avatar alt={payload?.name} {...stringAvatar(payload)} src={payload?.picture} />
-      </React.Fragment>
+    SetUserPicture(token, CreateAvatar)
   }
+
+  React.useMemo(() => {
+    SetUserInfo()
+  }, [])
 
   return (
     <React.Fragment>
@@ -92,7 +63,7 @@ console.log(payload)
           <Typography variant="h6" color="inherit" noWrap sx={{ flexGrow: 1 }}>
             <Link href="https://stockholmfootvolley.github.io/frontend/">Booking - Stockholm Footvolley</Link>
           </Typography>
-          {GetUserInfo()}
+            {node}
         </Toolbar>
       </AppBar>
       {props.children}

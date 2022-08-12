@@ -3,6 +3,7 @@ import { Template } from "./template"
 import { GetUser, NotAMember, TokenNotFound } from "./utils"
 import { Typography, Container, Alert, Snackbar, Box, Card, CardContent, LinearProgress } from "@mui/material"
 import GoogleSignin from "./GoogleSignin"
+import { FacebookSignIn } from "./FacebookSignin"
 
 export function Login() {
     const [cookies, setCookie] = React.useState(document.cookie)
@@ -58,7 +59,11 @@ export function Login() {
         if (!allowLogin) {
             return
         }
-        return <GoogleSignin />
+        return <React.Fragment>
+            <GoogleSignin />
+            <br/>
+            <FacebookSignIn />
+        </React.Fragment>
     }
 
     return <Template>
@@ -76,7 +81,7 @@ export function Login() {
             </Typography>
 
         </Container>
-        <Container hidden={inProgress} maxWidth="md" component="main">
+        <Container hidden={inProgress} maxWidth="lg" component="main">
             <Card hidden={inProgress}>
                 <CardContent hidden={inProgress}>
                     <Box
@@ -84,7 +89,6 @@ export function Login() {
                         sx={{
                             display: 'center',
                             justifyContent: 'center',
-                            alignItems: 'baseline',
                             mb: 2,
                         }}
                     >

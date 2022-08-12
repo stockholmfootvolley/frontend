@@ -135,6 +135,16 @@ export function ParseJWTToken(token: string): any {
     return jose.decodeJwt(token) as any
 }
 
+export function SetUserPicture(token: string, callback:Function) {
+    try {
+        let jwtToken = jose.decodeJwt(token) as any
+        callback(jwtToken.name, jwtToken.picture )
+        // likely to be FB token
+    } catch (JWTInvalid) {
+        let a = GetFacebookTokenInfo(token, callback)
+    }
+}
+
 export function showDateAndTime(date: Date): string {
     if (date === undefined)
         return ""
@@ -158,4 +168,14 @@ function getZeroInFront(n: number): string {
         return `0${n}`
     }
     return `${n}`
+}
+
+export function GetFacebookTokenInfo(token: string, callback: Function): Promise<any> {
+    //@ts-ignore it.
+    return window.FB.api('/me?fields=name,email,picture',
+        { access_token: token },
+        function (response: any) {
+            callback(response.name, response.picture.data?.url)
+        }
+    )
 }
