@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react"
 import { Template } from "./template"
 import { GetEvents, NotAMember, showDateAndTime, TokenNotFound } from "./utils"
 import { Event } from "./model"
-import { Grid, Card, CardHeader, CardContent, Box, Typography, CardActions, Container, Alert, Snackbar } from "@mui/material"
-import { Link } from "react-router-dom";
+import { Grid, Card, CardHeader, CardContent, Box, Typography, CardActions, Container, Alert, Snackbar, Link } from "@mui/material"
+import { Link as LinkRouter } from "react-router-dom";
 import { grey } from '@mui/material/colors';
 
 export function Events() {
@@ -26,7 +26,6 @@ export function Events() {
         setEvents(response as Event[])
       }
     }).catch(e => {
-      debugger
       switch (e) {
         case TokenNotFound: {
           window.location.hash = "/"
@@ -65,7 +64,7 @@ export function Events() {
           md={4}
         >
           <Card>
-            <Link
+            <LinkRouter
               to={event.date.toISOString().split('T')[0]}
               style={{ textDecoration: "none", color: "inherit" }}
             >
@@ -85,7 +84,7 @@ export function Events() {
                   },
                 }}
               />
-            </Link>
+            </LinkRouter>
 
             <CardContent>
               <Box
@@ -103,7 +102,7 @@ export function Events() {
                   Participants {`${event.attendees.length}/${event.max_participants}`}
                 </Typography>
                 <Typography component="h5" variant="caption" color="text.secondary">
-                  <Link to={`https://maps.google.com/?q=${event.local}`}>{event.local.split(",")[0]}</Link>
+                  <Link target="_blank" href={`https://maps.google.com/?q=${event.local}`}>{event.local.split(",")[0]}</Link>
                 </Typography>
               </Box>
             </CardContent>

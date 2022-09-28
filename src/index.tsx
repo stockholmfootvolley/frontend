@@ -16,7 +16,7 @@ root.render(
     <Router >
       <Routes>
         <Route path="/" element={<Events />} />
-        <Route path="/login" element={<Login />} />
+        <Route path="/login/:redirect" element={<Login />} />
         <Route path="/:date" element={<SingleEvent />} />
       </Routes>
     </Router>

@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react"
-import { Container, Typography, Grid, Box, Card, CardActions, CardContent, CardHeader, Fab, Snackbar, CircularProgress, } from "@mui/material"
-import { Link, useParams, } from "react-router-dom"
+import { Link, Container, Typography, Grid, Box, Card, CardActions, CardContent, CardHeader, Fab, Snackbar, CircularProgress, } from "@mui/material"
+import { useParams, } from "react-router-dom"
 import { Template } from "./template"
-import { GetSpecificEvent, AddAttendee, RemoveAttendee, showDate, showTime } from "./utils"
+import { GetSpecificEvent, AddAttendee, RemoveAttendee, showDate, showTime, GetToken } from "./utils"
 import { Event, Attendee, PaymentLink } from "./model"
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import PersonRemoveIcon from '@mui/icons-material/PersonRemove';
@@ -69,6 +69,14 @@ export function SingleEvent() {
             setLoading(true)
         }
 
+        if (GetToken() === undefined){
+            let url = new URL(window.location.origin)
+
+            url.pathname = window.location.pathname
+            url.hash = "/login/" + params.date as string
+            window.location.href = url.toString()
+        }
+
         AddAttendee(params.date as string).then(response => {
             if (Object.hasOwn(response as Object, "payment_link")) {
                 const link = response as PaymentLink
@@ -92,6 +100,14 @@ export function SingleEvent() {
         if (!loading) {
             setSuccess(false)
             setloadingRemove(true)
+        }
+
+        if (GetToken() === undefined){
+            let url = new URL(window.location.origin)
+
+            url.pathname = window.location.pathname
+            url.hash = "/login/" + params.date as string
+            window.location.href = url.toString()
         }
 
         RemoveAttendee(params.date as string).then(response => {
@@ -138,7 +154,7 @@ export function SingleEvent() {
                 title={`${showDate(event?.date)}\n${showTime(event?.date)}`}
                 subheader={
                     <Typography align="center" component="h5" variant="caption" color="text.secondary">
-                        <Link to={`https://maps.google.com/?q=${event?.local}`}>{event?.local.split(",")[0]}</Link>
+                        <Link target="_blank" href={`https://maps.google.com/?q=${event?.local}`}>{event?.local.split(",")[0]}</Link>
                     </Typography>}
                 titleTypographyProps={{ align: 'center' }}
                 subheaderTypographyProps={{
@@ -165,7 +181,6 @@ export function SingleEvent() {
                 >
                     {getAttendes(event?.attendees)}
                     <Box sx={{ m: 1, position: 'relative' }}>
-
                         <Fab onClick={addAttendee} sx={buttonSx} color="primary" aria-label="add" variant="extended" disabled={loading}>
                             <PersonAddIcon />
                             &nbsp;&nbsp;I'm Coming
@@ -184,7 +199,6 @@ export function SingleEvent() {
                         )}
                     </Box>
                     <Box sx={{ m: 1, position: 'relative' }}>
-
                         <Fab onClick={removeAttendee} color="primary" aria-label="remove" variant="extended" disabled={loadingRemove}>
                             <PersonRemoveIcon />
                             &nbsp;&nbsp;I will not attend
@@ -192,6 +206,7 @@ export function SingleEvent() {
                         {loadingRemove && (
                             <CircularProgress
                                 size={68}
+                            hidden={!loadingRemove}
                                 sx={{
                                     color: blue[500],
                                     position: 'absolute',

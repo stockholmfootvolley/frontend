@@ -4,19 +4,20 @@ import { GetUser, NotAMember, TokenNotFound } from "./utils"
 import { Typography, Container, Alert, Snackbar, Box, Card, CardContent, LinearProgress } from "@mui/material"
 import GoogleSignin from "./GoogleSignin"
 import { FacebookSignIn } from "./FacebookSignin"
+import { useParams } from "react-router-dom"
 
 export function Login() {
-    const [cookies, setCookie] = React.useState(document.cookie)
     const [open, setOpen] = React.useState(false)
     const [errorMessage, setErrorMessage] = useState("")
     const [allowLogin, setAllowLogin] = useState(false)
     const [inProgress, setInProgress] = useState(true)
+    const [cookies, setCookie] = React.useState(document.cookie)
+    let params = useParams()
 
     useEffect(() => {
         const updateCookies = () => {
             if (cookies.length !== document.cookie.length) {
                 setCookie(document.cookie)
-                setOpen(false)
             }
         }
         window.setInterval(updateCookies, 100)
@@ -24,7 +25,9 @@ export function Login() {
         GetUser().then(response => {
             setInProgress(false)
             if ((response !== undefined) && (response !== null)) {
-                window.location.hash = "/events"
+                let redirectTo = "/"
+                redirectTo += params.redirect as string
+                window.location.hash = redirectTo
             }
         }).catch(e => {
             switch (e) {
@@ -46,7 +49,7 @@ export function Login() {
             setOpen(true)
         })
 
-    }, [cookies])
+    }, [params.redirect, cookies])
 
     function handleClose(newEvent?: any, reason?: string) {
         if (reason === 'clickaway') {
@@ -61,7 +64,7 @@ export function Login() {
         }
         return <React.Fragment>
             <GoogleSignin />
-            <br/>
+            <br />
             <FacebookSignIn />
         </React.Fragment>
     }
