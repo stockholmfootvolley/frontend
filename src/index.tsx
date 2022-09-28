@@ -15,11 +15,9 @@ root.render(
   <React.Fragment>
     <Router >
       <Routes>
-        <Route path="/" element={<Login />} />
-        <Route path="/events">
-          <Route path="" element={<Events />} />
-          <Route path=":date" element={<SingleEvent />} />
-        </Route>
+        <Route path="/" element={<Events />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/:date" element={<SingleEvent />} />
       </Routes>
     </Router>
 

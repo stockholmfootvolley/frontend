@@ -3,21 +3,16 @@ import Cookies from 'universal-cookie';
 import * as jose from 'jose'
 
 const API = "https://booking.ramonmedeiros.dev"
+const SWISH_API = "https://mpc.getswish.net/qrg-swish/api/v1/prefilled"
+
 export const TokenNotFound = "token not found"
 export const NotAMember = "not a member"
 
 export function GetEvents(): Promise<void | Event[] | null | undefined> {
     const url = new URL("/events", API)
-    let token = GetToken()
-    if (token === undefined) {
-        return Promise.reject(TokenNotFound)
-    }
 
     return fetch(url, {
         method: "GET",
-        headers: {
-            "Authorization": `Bearer ${token}`,
-        },
     })
         .then(response => {
             if (response.status === 401) {
@@ -38,17 +33,9 @@ export function GetEvents(): Promise<void | Event[] | null | undefined> {
 }
 
 export function GetSpecificEvent(date: string): Promise<void | Event | null | undefined> {
-    let token = GetToken()
-    if (token === undefined) {
-        return Promise.reject(TokenNotFound)
-    }
-
     const url = new URL(`/event/${date}`, API)
     return fetch(url, {
         method: "GET",
-        headers: {
-            "Authorization": `Bearer ${token}`,
-        },
     })
         .then(response => response.json())
         .then(data => {
@@ -178,4 +165,37 @@ export function GetFacebookTokenInfo(token: string, callback: Function): Promise
             callback(response.name, response.picture.data?.url)
         }
     )
+}
+
+export function GetSwishQRCode(phone: string, amount: Number, message: string) {
+
+    return fetch(SWISH_API, {
+        headers: {
+            "Content-Type": "application/json",
+        },
+        method: "POST",
+        body: `{
+            "format": "png",
+            "size": 300,
+            "payee":{
+              "value": "${phone}",
+              "editable": false
+            },
+            "amount":{
+              "value": ${amount},
+              "editable": false
+            },
+            "message": {
+              "value": "${message}",
+              "editable": true
+            }
+        }`,
+    })
+        .then(response => {
+           console.log(response.text())
+        })
+        .catch(error => {
+            console.error(error)
+        })
+
 }

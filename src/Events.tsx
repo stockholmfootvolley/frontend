@@ -26,6 +26,7 @@ export function Events() {
         setEvents(response as Event[])
       }
     }).catch(e => {
+      debugger
       switch (e) {
         case TokenNotFound: {
           window.location.hash = "/"
