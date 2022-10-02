@@ -3,8 +3,6 @@ import Cookies from 'universal-cookie';
 import * as jose from 'jose'
 
 const API = "https://booking.ramonmedeiros.dev"
-const SWISH_API = "https://mpc.getswish.net/qrg-swish/api/v1/prefilled"
-const PHONE = "+46724675429"
 
 export const TokenNotFound = "token not found"
 export const NotAMember = "not a member"
@@ -188,40 +186,6 @@ export function GetFacebookTokenInfo(token: string, callback: Function): Promise
             callback(response.name, response.picture.data?.url)
         }
     )
-}
-
-export function GetSwishQRCode(amount: Number, message: string): Promise<void | string | null | undefined> {
-
-    return fetch(SWISH_API, {
-        headers: {
-            "Content-Type": "application/json",
-        },
-        method: "POST",
-        body: `{
-            "format": "png",
-            "size": 300,
-            "payee":{
-              "value": "${PHONE}",
-              "editable": false
-            },
-            "amount":{
-              "value": ${amount},
-              "editable": false
-            },
-            "message": {
-              "value": "${message}",
-              "editable": true
-            }
-        }`,
-    })
-        .then(response => response.blob())
-        .then(data => {
-            const imageObjectURL = URL.createObjectURL(data)
-            return imageObjectURL
-        })
-        .catch(error => {
-            console.error(error)
-        })
 }
 
 export function redirectLogin(date: string) {

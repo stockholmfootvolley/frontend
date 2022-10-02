@@ -8,6 +8,7 @@ export interface Event {
     level: string
     price: number
     max_participants: number
+    qr_code: string
 }
 
 export interface Attendee {

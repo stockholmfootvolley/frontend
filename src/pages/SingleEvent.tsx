@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react"
-import { Link, Container, Typography, Grid, Box, Card, CardActions, CardContent, CardHeader, Fab, Snackbar, CircularProgress, } from "@mui/material"
+import { Link, Container, Typography, Grid, Box, Card, CardActions, CardContent, CardHeader, Fab, Snackbar, CircularProgress } from "@mui/material"
 import { useParams, } from "react-router-dom"
 import { Template } from "../template"
-import { GetSpecificEvent, AddAttendee, RemoveAttendee, showDateWeekTime, GetSwishQRCode } from "../utils"
+import { GetSpecificEvent, AddAttendee, RemoveAttendee, showDateWeekTime } from "../utils"
 import { Event, Attendee } from "../model"
 import PersonRemoveIcon from '@mui/icons-material/PersonRemove'
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
@@ -37,13 +37,6 @@ export function SingleEvent() {
 
         GetSpecificEvent(params.date as string).then(response => {
             if ((response !== undefined) && (response !== null)) {
-                if (response.price > 0) {
-                    GetSwishQRCode(response.price, `${response.name} ${response.date}`)
-                        .then(qrCodeResponse => {
-                            let imgTag = document.getElementById("qrcode") as HTMLImageElement
-                            imgTag.src = qrCodeResponse as string
-                        })
-                }
                 setEvent(response as Event)
             }
         }).catch(e => {
@@ -131,52 +124,56 @@ export function SingleEvent() {
                 }}
             />
             <CardContent>
-                <img id="qrcode" alt="" />
-                <Box
-                    sx={{
-                        display: 'inline',
-                        justifyContent: 'center',
-                        alignItems: 'baseline',
-                        mb: 2,
-                    }}
-                >
-                    {getAttendes(event?.attendees)}
-                    <Box sx={{ m: 1, position: 'relative' }}>
-                        <Fab onClick={addAttendee} sx={buttonSx} color="primary" aria-label="add" variant="extended" disabled={loading}>
-                            <PersonAddIcon />
-                            &nbsp;&nbsp;I'm Coming
-                        </Fab>
-                        {loading && (
-                            <CircularProgress
-                                size={68}
-                                sx={{
-                                    color: blue[500],
-                                    position: 'absolute',
-                                    top: -6,
-                                    left: -6,
-                                    zIndex: 1,
-                                }}
-                            />
-                        )}
-                        <Fab onClick={removeAttendee} color="primary" aria-label="remove" variant="extended" disabled={loadingRemove}>
-                            <PersonRemoveIcon />
-                            &nbsp;&nbsp;I will not attend
-                        </Fab>
-                        {loadingRemove && (
-                            <CircularProgress
-                                size={68}
-                                hidden={!loadingRemove}
-                                sx={{
-                                    color: blue[500],
-                                    position: 'absolute',
-                                    top: -6,
-                                    left: -6,
-                                    zIndex: 1,
-                                }}
-                            />
-                        )}
-                    </Box>
-                </Box>
+            <Grid container spacing={2} columns={18}>
+            <Grid item xs={12}>
+                        {getAttendes(event?.attendees)}
+                        <Box sx={{ m: 1, position: 'relative' }}>
+                            <Fab onClick={addAttendee} sx={buttonSx} color="primary" aria-label="add" variant="extended" disabled={loading}>
+                                <PersonAddIcon />
+                                &nbsp;&nbsp;I'm Coming
+                            </Fab>
+                            {loading && (
+                                <CircularProgress
+                                    size={68}
+                                    sx={{
+                                        color: blue[500],
+                                        position: 'absolute',
+                                        top: -6,
+                                        left: -6,
+                                        zIndex: 1,
+                                    }}
+                                />
+                            )}
+                            <Fab onClick={removeAttendee} color="primary" aria-label="remove" variant="extended" disabled={loadingRemove}>
+                                <PersonRemoveIcon />
+                                &nbsp;&nbsp;Not coming
+                            </Fab>
+                            {loadingRemove && (
+                                <CircularProgress
+                                    size={68}
+                                    hidden={!loadingRemove}
+                                    sx={{
+                                        color: blue[500],
+                                        position: 'absolute',
+                                        top: -6,
+                                        left: -6,
+                                        zIndex: 1,
+                                    }}
+                                />
+                            )}
+
+                        </Box>
+                    </Grid>
+                    <Grid item xs={6}>
+                        <img style={{
+                            //position: "relative",
+                            right: "0px",
+                            top: "0px",
+                            width: "150px",
+                            height: "150px"
+                        }} hidden={event.qr_code === ""} id="qrcode" alt="" src={`data:image/jpeg;base64,${event.qr_code}`} />
+                    </Grid>
+                </Grid>
             </CardContent>
             <CardActions>
             </CardActions>
