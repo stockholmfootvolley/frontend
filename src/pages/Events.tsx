@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react"
 import { Template } from "../template"
-import { GetEvents, NotAMember, showDateAndTime, TokenNotFound } from "../utils"
+import { GetEvents, NotAMember, showDateWeekTime, TokenNotFound } from "../utils"
 import { Event } from "../model"
 import { Grid, Card, CardHeader, CardContent, Box, Typography, CardActions, Container, Alert, Snackbar, Link } from "@mui/material"
 import { Link as LinkRouter } from "react-router-dom";
@@ -69,7 +69,7 @@ export function Events() {
               style={{ textDecoration: "none", color: "inherit" }}
             >
               <CardHeader
-                title={showDateAndTime(event.date)}
+                title={showDateWeekTime(event.date)}
                 titleTypographyProps={{ align: 'center' }}
                 subheaderTypographyProps={{
                   align: 'center',

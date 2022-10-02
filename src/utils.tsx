@@ -4,6 +4,7 @@ import * as jose from 'jose'
 
 const API = "https://booking.ramonmedeiros.dev"
 const SWISH_API = "https://mpc.getswish.net/qrg-swish/api/v1/prefilled"
+const PHONE = "+46724675429"
 
 export const TokenNotFound = "token not found"
 export const NotAMember = "not a member"
@@ -71,16 +72,21 @@ export function GetUser(): Promise<void | User | null | undefined> {
         })
 }
 
-export function AddAttendee(date: string, addPayment: Date): Promise<void | Event | PaymentLink | null | undefined> {
+export function AddAttendee(date: string, addPayment: Date | null): Promise<void | Event | PaymentLink | null | undefined> {
     const url = new URL(`/event/${date}`, API)
 
-    if (addPayment){
+    let token = GetToken()
+    if (!token) {
+        redirectLogin(date)
+    }
+
+    if (addPayment) {
         url.searchParams.set("paid", addPayment.toString())
     }
-    
+
     return fetch(url, {
         headers: {
-            "Authorization": `Bearer ${GetToken()}`,
+            "Authorization": `Bearer ${token}`,
         },
         method: "POST",
     })
@@ -101,9 +107,14 @@ export function AddAttendee(date: string, addPayment: Date): Promise<void | Even
 
 export function RemoveAttendee(date: string): Promise<void | Event | null | undefined> {
     const url = new URL(`/event/${date}`, API)
+    let token = GetToken()
+    if (!token) {
+        redirectLogin(date)
+    }
+
     return fetch(url, {
         headers: {
-            "Authorization": `Bearer ${GetToken()}`,
+            "Authorization": `Bearer ${token}`,
         },
         method: "DELETE",
     })
@@ -119,7 +130,7 @@ export function RemoveAttendee(date: string): Promise<void | Event | null | unde
 }
 
 export function GetToken(): string | undefined {
-    const cookies = new Cookies();
+    const cookies = new Cookies()
     return cookies.get("token")
 }
 
@@ -127,10 +138,10 @@ export function ParseJWTToken(token: string): any {
     return jose.decodeJwt(token) as any
 }
 
-export function SetUserPicture(token: string, callback:Function) {
+export function SetUserPicture(token: string, callback: Function) {
     try {
         let jwtToken = jose.decodeJwt(token) as any
-        callback(jwtToken.name, jwtToken.picture )
+        callback(jwtToken.name, jwtToken.picture)
         // likely to be FB token
     } catch (JWTInvalid) {
         GetFacebookTokenInfo(token, callback)
@@ -147,6 +158,13 @@ export function showDate(date: Date): string {
     if (date === undefined)
         return ""
     return `${date.getFullYear()}-${getZeroInFront(date.getMonth() + 1)}-${getZeroInFront(date.getUTCDate())}`
+}
+
+export function showDateWeekTime(date: Date): string {
+    if (date === undefined)
+        return ""
+
+    return date.toLocaleTimeString('en-us', { weekday: 'long', year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false });
 }
 
 export function showTime(date: Date): string {
@@ -172,7 +190,7 @@ export function GetFacebookTokenInfo(token: string, callback: Function): Promise
     )
 }
 
-export function GetSwishQRCode(phone: string, amount: Number, message: string) {
+export function GetSwishQRCode(amount: Number, message: string): Promise<void | string | null | undefined> {
 
     return fetch(SWISH_API, {
         headers: {
@@ -183,7 +201,7 @@ export function GetSwishQRCode(phone: string, amount: Number, message: string) {
             "format": "png",
             "size": 300,
             "payee":{
-              "value": "${phone}",
+              "value": "${PHONE}",
               "editable": false
             },
             "amount":{
@@ -196,11 +214,19 @@ export function GetSwishQRCode(phone: string, amount: Number, message: string) {
             }
         }`,
     })
-        .then(response => {
-           console.log(response.text())
+        .then(response => response.blob())
+        .then(data => {
+            const imageObjectURL = URL.createObjectURL(data)
+            return imageObjectURL
         })
         .catch(error => {
             console.error(error)
         })
+}
 
+export function redirectLogin(date: string) {
+    let url = new URL(window.location.origin)
+    url.pathname = window.location.pathname
+    url.hash = "/login/" + date as string
+    window.location.href = url.toString()
 }

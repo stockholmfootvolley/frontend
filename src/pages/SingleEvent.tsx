@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react"
 import { Link, Container, Typography, Grid, Box, Card, CardActions, CardContent, CardHeader, Fab, Snackbar, CircularProgress, } from "@mui/material"
 import { useParams, } from "react-router-dom"
 import { Template } from "../template"
-import { GetSpecificEvent, AddAttendee, RemoveAttendee, showDate, showTime, GetToken } from "../utils"
+import { GetSpecificEvent, AddAttendee, RemoveAttendee, showDateWeekTime, GetSwishQRCode } from "../utils"
 import { Event, Attendee } from "../model"
 import PersonRemoveIcon from '@mui/icons-material/PersonRemove'
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
@@ -25,7 +25,6 @@ export function SingleEvent() {
 
     const [loadingRemove, setloadingRemove] = React.useState(false);
     const [loading, setLoading] = React.useState(false);
-
     const [success, setSuccess] = React.useState(false);
 
     useEffect(() => {
@@ -38,12 +37,18 @@ export function SingleEvent() {
 
         GetSpecificEvent(params.date as string).then(response => {
             if ((response !== undefined) && (response !== null)) {
+                if (response.price > 0) {
+                    GetSwishQRCode(response.price, `${response.name} ${response.date}`)
+                        .then(qrCodeResponse => {
+                            let imgTag = document.getElementById("qrcode") as HTMLImageElement
+                            imgTag.src = qrCodeResponse as string
+                        })
+                }
                 setEvent(response as Event)
             }
         }).catch(e => {
             window.location.hash = "/"
         })
-
     }, [params.date, cookies])
 
     function handleClose(newEvent?: any, reason?: string) {
@@ -59,15 +64,7 @@ export function SingleEvent() {
             setLoading(true)
         }
 
-        if (GetToken() === undefined) {
-            let url = new URL(window.location.origin)
-
-            url.pathname = window.location.pathname
-            url.hash = "/login/" + params.date as string
-            window.location.href = url.toString()
-        }
-
-        AddAttendee(params.date as string, new Date()).then(response => {
+        AddAttendee(params.date as string, null).then(response => {
             const event = response as Event
             event.date = new Date(event.date)
             setEvent(event)
@@ -95,14 +92,6 @@ export function SingleEvent() {
             setloadingRemove(true)
         }
 
-        if (GetToken() === undefined) {
-            let url = new URL(window.location.origin)
-
-            url.pathname = window.location.pathname
-            url.hash = "/login/" + params.date as string
-            window.location.href = url.toString()
-        }
-
         RemoveAttendee(params.date as string).then(response => {
             setEvent(response as Event)
             setloadingRemove(false)
@@ -122,7 +111,7 @@ export function SingleEvent() {
 
         return <Card>
             <CardHeader
-                title={`${showDate(event?.date)}\n${showTime(event?.date)}`}
+                title={`${showDateWeekTime(event.date)}`}
                 subheader={
                     <Typography align="center" component="h5" variant="caption" color="text.secondary">
                         <Link target="_blank" href={`https://maps.google.com/?q=${event?.local}`}>{event?.local.split(",")[0]}</Link>
@@ -142,6 +131,7 @@ export function SingleEvent() {
                 }}
             />
             <CardContent>
+                <img id="qrcode" alt="" />
                 <Box
                     sx={{
                         display: 'inline',
@@ -186,7 +176,6 @@ export function SingleEvent() {
                             />
                         )}
                     </Box>
-
                 </Box>
             </CardContent>
             <CardActions>
