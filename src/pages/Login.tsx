@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react"
-import { Template } from "./template"
-import { GetUser, NotAMember, TokenNotFound } from "./utils"
+import { Template } from "../template"
+import { GetUser, NotAMember, TokenNotFound } from "../utils"
 import { Typography, Container, Alert, Snackbar, Box, Card, CardContent, LinearProgress } from "@mui/material"
-import GoogleSignin from "./GoogleSignin"
-import { FacebookSignIn } from "./FacebookSignin"
+import GoogleSignin from "../components/GoogleSignin"
+import { FacebookSignIn } from "../components/FacebookSignin"
 import { useParams } from "react-router-dom"
 
 export function Login() {

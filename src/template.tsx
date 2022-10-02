@@ -23,7 +23,6 @@ const footers = [
       },
     ],
   },
-
 ];
 
 export function Template(props: any) {
@@ -36,38 +35,35 @@ export function Template(props: any) {
       </React.Fragment>])
   }
 
-  function SetUserInfo() {
+  React.useMemo(() => {
     let token = GetToken()
     if (token === undefined) {
       return
     }
-
     SetUserPicture(token, CreateAvatar)
-  }
-
-  React.useMemo(() => {
-    SetUserInfo()
   }, [])
 
   return (
     <React.Fragment>
-      <GlobalStyles styles={{ ul: { margin: 0, padding: 0, listStyle: 'none' } }} />
-      <CssBaseline />
+      <GlobalStyles styles={{ ul: { margin: 0, padding: 0, listStyle: 'none' } }} key={"globalstyles"}/>
+      <CssBaseline key={"cssbaseline"}/>
       <AppBar
+        key={"appbar"}
         position="static"
         color="default"
         elevation={0}
         sx={{ borderBottom: (theme) => `1px solid ${theme.palette.divider}` }}
       >
-        <Toolbar sx={{ flexWrap: 'wrap' }}>
-          <Typography variant="h6" color="inherit" noWrap sx={{ flexGrow: 1 }}>
-            <Link href="https://stockholmfootvolley.github.io/frontend/">Booking - Stockholm Footvolley</Link>
+        <Toolbar sx={{ flexWrap: 'wrap' }} key={"toolbar"}>
+          <Typography variant="h6" color="inherit" noWrap sx={{ flexGrow: 1 }} key={"toolbar-typo"}>
+            <Link href={window.location.origin + window.location.pathname}>Booking - Stockholm Footvolley</Link>
           </Typography>
-            {node}
+          {node}
         </Toolbar>
       </AppBar>
       {props.children}
       <Container
+        key={"maincontainer"}
         maxWidth="md"
         component="footer"
         sx={{
@@ -76,19 +72,21 @@ export function Template(props: any) {
           py: [3, 6],
         }}
       >
-        <Grid sx={{
+        <Grid 
+          key={"grid2"}
+          sx={{
           display: 'center',
           justifyContent: 'center',
         }}>
           {footers.map((footer) => (
-            <Grid item xs={6} sm={3} key={footer.title}>
-              <Typography variant="h6" color="text.primary" gutterBottom>
+            <Grid item xs={6} sm={3} key={`${footer.title}grid`}>
+              <Typography variant="h6" color="text.primary" gutterBottom key={`${footer.title}typo`}>
                 {footer.title}
               </Typography>
-              <ul>
+              <ul key={`${footer.title}ul`}>
                 {footer.description.map((item) => (
-                  <li key={item.name}>
-                    <Link href={item.link} variant="subtitle1" color="text.secondary">
+                  <li key={`${item.name}li`}>
+                    <Link href={item.link} variant="subtitle1" color="text.secondary" key={item.link}>
                       {item.name}
                     </Link>
                   </li>

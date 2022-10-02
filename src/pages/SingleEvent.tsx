@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react"
 import { Link, Container, Typography, Grid, Box, Card, CardActions, CardContent, CardHeader, Fab, Snackbar, CircularProgress, } from "@mui/material"
 import { useParams, } from "react-router-dom"
-import { Template } from "./template"
-import { GetSpecificEvent, AddAttendee, RemoveAttendee, showDate, showTime, GetToken } from "./utils"
-import { Event, Attendee, PaymentLink } from "./model"
+import { Template } from "../template"
+import { GetSpecificEvent, AddAttendee, RemoveAttendee, showDate, showTime, GetToken } from "../utils"
+import { Event, Attendee } from "../model"
+import PersonRemoveIcon from '@mui/icons-material/PersonRemove'
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
-import PersonRemoveIcon from '@mui/icons-material/PersonRemove';
-import { Helmet } from "react-helmet";
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
 import { blue, grey } from '@mui/material/colors';
 
@@ -24,19 +23,10 @@ export function SingleEvent() {
     const [errorMessage, setErrorMessage] = useState("")
     const [cookies, setCookie] = React.useState(document.cookie)
 
-    const [loading, setLoading] = React.useState(false);
     const [loadingRemove, setloadingRemove] = React.useState(false);
+    const [loading, setLoading] = React.useState(false);
 
     const [success, setSuccess] = React.useState(false);
-
-    const buttonSx = {
-        ...(success && {
-            bgcolor: blue[500],
-            '&:hover': {
-                bgcolor: blue[700],
-            },
-        }),
-    };
 
     useEffect(() => {
         const updateCookies = () => {
@@ -50,7 +40,7 @@ export function SingleEvent() {
             if ((response !== undefined) && (response !== null)) {
                 setEvent(response as Event)
             }
-        }).catch(e =>{
+        }).catch(e => {
             window.location.hash = "/"
         })
 
@@ -69,7 +59,7 @@ export function SingleEvent() {
             setLoading(true)
         }
 
-        if (GetToken() === undefined){
+        if (GetToken() === undefined) {
             let url = new URL(window.location.origin)
 
             url.pathname = window.location.pathname
@@ -77,18 +67,12 @@ export function SingleEvent() {
             window.location.href = url.toString()
         }
 
-        AddAttendee(params.date as string).then(response => {
-            if (Object.hasOwn(response as Object, "payment_link")) {
-                const link = response as PaymentLink
-                window.location.href = link.payment_link
-            } else {
-                const event = response as Event
-                event.date = new Date(event.date)
-                setEvent(event)
-                setLoading(false)
-                return
-            }
-
+        AddAttendee(params.date as string, new Date()).then(response => {
+            const event = response as Event
+            event.date = new Date(event.date)
+            setEvent(event)
+            setLoading(false)
+            return
         })
             .catch(error => {
                 setErrorMessage("You seem to no be authenticated")
@@ -96,13 +80,22 @@ export function SingleEvent() {
             })
     }
 
+    const buttonSx = {
+        ...(success && {
+            bgcolor: blue[500],
+            '&:hover': {
+                bgcolor: blue[700],
+            },
+        }),
+    };
+
     function removeAttendee() {
         if (!loading) {
             setSuccess(false)
             setloadingRemove(true)
         }
 
-        if (GetToken() === undefined){
+        if (GetToken() === undefined) {
             let url = new URL(window.location.origin)
 
             url.pathname = window.location.pathname
@@ -120,21 +113,6 @@ export function SingleEvent() {
             })
     }
 
-    function getDescriptionMeta(): string {
-        if ((event === undefined)) {
-            return ""
-        }
-
-        let description = ""
-        description += `${params.date} - ${event.name}\n`
-
-        event.attendees.forEach((user, index) => {
-            description += `${index}. ${user.name}\n`
-        })
-
-        return description
-    }
-
     function getEvent() {
         if ((event === undefined) ||
             (event.date === undefined) ||
@@ -143,13 +121,6 @@ export function SingleEvent() {
         }
 
         return <Card>
-            <Helmet>
-                <meta property="og:site_name" content="Stockholm Footvolley SITE" />
-                <meta property="og:title" content={`Stockholm Footvolley - ${params.date}`} />
-                <meta property="og:url" content={window.location.href} />
-                <meta property="og:type" content="article" />
-                <meta property="og:description" content={getDescriptionMeta()} />
-            </Helmet>
             <CardHeader
                 title={`${showDate(event?.date)}\n${showTime(event?.date)}`}
                 subheader={
@@ -197,8 +168,6 @@ export function SingleEvent() {
                                 }}
                             />
                         )}
-                    </Box>
-                    <Box sx={{ m: 1, position: 'relative' }}>
                         <Fab onClick={removeAttendee} color="primary" aria-label="remove" variant="extended" disabled={loadingRemove}>
                             <PersonRemoveIcon />
                             &nbsp;&nbsp;I will not attend
@@ -206,7 +175,7 @@ export function SingleEvent() {
                         {loadingRemove && (
                             <CircularProgress
                                 size={68}
-                            hidden={!loadingRemove}
+                                hidden={!loadingRemove}
                                 sx={{
                                     color: blue[500],
                                     position: 'absolute',
@@ -260,17 +229,8 @@ export function SingleEvent() {
         </React.Fragment>
     }
 
-    function getEventName(): string {
-        let name = event?.name
-        if (event.price > 0) {
-            name += ` (${event.price} sek)`
-        }
-
-        return name
-    }
-
     return <Template>
-        <Container disableGutters maxWidth="sm" component="main" sx={{ pt: 8, pb: 6 }}>
+        <Container disableGutters maxWidth="sm" component="main" sx={{ pt: 8, pb: 6 }} key={"singleeventcontainer"}>
             <Typography
                 key={event?.name}
                 component="h1"
@@ -278,17 +238,27 @@ export function SingleEvent() {
                 align="center"
                 color="text.primary"
                 gutterBottom
-            >{getEventName()}
+            >{event?.name}
+            </Typography>
+            <Typography
+                hidden={event.price === 0}
+                key={`${event?.name}sek`}
+                component="h1"
+                variant="h2"
+                align="center"
+                color="text.primary"
+                gutterBottom
+            >{`${event.price} sek`}
             </Typography>
             {getEvent()}
         </Container>
-        <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
-            <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
+        <Snackbar open={open} autoHideDuration={6000} onClose={handleClose} key="snackbar">
+            <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }} key="alert">
                 {errorMessage}
             </Alert>
         </Snackbar>
-        <Container maxWidth="md" component="main">
-            <Grid container spacing={5} alignItems="flex-end">
+        <Container maxWidth="md" component="main" key="singleeventcontainer2">
+            <Grid container spacing={5} alignItems="flex-end" key="singleeventgrid">
             </Grid>
         </Container>
     </Template>

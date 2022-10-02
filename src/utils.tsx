@@ -71,8 +71,13 @@ export function GetUser(): Promise<void | User | null | undefined> {
         })
 }
 
-export function AddAttendee(date: string): Promise<void | Event | PaymentLink | null | undefined> {
+export function AddAttendee(date: string, addPayment: Date): Promise<void | Event | PaymentLink | null | undefined> {
     const url = new URL(`/event/${date}`, API)
+
+    if (addPayment){
+        url.searchParams.set("paid", addPayment.toString())
+    }
+    
     return fetch(url, {
         headers: {
             "Authorization": `Bearer ${GetToken()}`,

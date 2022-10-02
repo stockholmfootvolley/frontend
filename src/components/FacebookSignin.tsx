@@ -4,7 +4,7 @@ import FacebookLogin from 'react-facebook-login';
 import Cookies from 'universal-cookie';
 
 export function FacebookSignIn() {
-    const [user, setUser] = useState(false)
+    const [, setUser] = useState(false)
 
     function responseFacebook(payload: any) {
         const cookies = new Cookies();

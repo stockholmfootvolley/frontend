@@ -1,7 +1,7 @@
 import { Button } from "@mui/material"
 import React, { useEffect, useState } from "react"
 import Cookies from 'universal-cookie';
-import { ParseJWTToken } from "./utils";
+import { ParseJWTToken } from "../utils";
 
 export default function GoogleSignin() {
     const [user, setUser] = useState(false)

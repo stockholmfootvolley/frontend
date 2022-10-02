@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
-import { Template } from "./template"
-import { GetEvents, NotAMember, showDateAndTime, TokenNotFound } from "./utils"
-import { Event } from "./model"
+import { Template } from "../template"
+import { GetEvents, NotAMember, showDateAndTime, TokenNotFound } from "../utils"
+import { Event } from "../model"
 import { Grid, Card, CardHeader, CardContent, Box, Typography, CardActions, Container, Alert, Snackbar, Link } from "@mui/material"
 import { Link as LinkRouter } from "react-router-dom";
 import { grey } from '@mui/material/colors';

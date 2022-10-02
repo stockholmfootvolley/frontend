@@ -5,10 +5,10 @@ import {
   Route,
   Routes
 } from "react-router-dom";
-import { Events } from './Events';
-import { SingleEvent } from './SingleEvent';
+import { Events } from './pages/Events';
+import { SingleEvent } from './pages/SingleEvent';
 import reportWebVitals from './reportWebVitals';
-import { Login } from './Login';
+import { Login } from './pages/Login';
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 root.render(
