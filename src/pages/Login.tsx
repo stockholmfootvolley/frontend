@@ -5,26 +5,21 @@ import { Typography, Container, Alert, Snackbar, Box, Card, CardContent, LinearP
 import GoogleSignin from "../components/GoogleSignin"
 import { FacebookSignIn } from "../components/FacebookSignin"
 import { useParams } from "react-router-dom"
+import { User } from "../model"
 
 export function Login() {
     const [open, setOpen] = React.useState(false)
     const [errorMessage, setErrorMessage] = useState("")
     const [allowLogin, setAllowLogin] = useState(false)
     const [inProgress, setInProgress] = useState(true)
-    const [cookies, setCookie] = React.useState(document.cookie)
     let params = useParams()
 
     useEffect(() => {
-        const updateCookies = () => {
-            if (cookies.length !== document.cookie.length) {
-                setCookie(document.cookie)
-            }
-        }
-        window.setInterval(updateCookies, 100)
-
         GetUser().then(response => {
             setInProgress(false)
             if ((response !== undefined) && (response !== null)) {
+                sessionStorage.setItem("user", JSON.stringify(response as User))
+
                 let redirectTo = "/"
                 redirectTo += params.redirect as string
                 window.location.hash = redirectTo
@@ -49,7 +44,7 @@ export function Login() {
             setOpen(true)
         })
 
-    }, [params.redirect, cookies])
+    }, [params.redirect])
 
     function handleClose(newEvent?: any, reason?: string) {
         if (reason === 'clickaway') {

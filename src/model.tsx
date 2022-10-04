@@ -15,14 +15,12 @@ export interface Attendee {
     name: string
     phone: string
     sign_time: string
-}
-
-export interface PaymentLink {
-    payment_link: string
+    paid_time: Date
 }
 
 export interface User {
     name: string
     email: string
     level: string
+    picture : string
 }

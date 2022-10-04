@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react"
-import { Link, Container, Typography, Grid, Box, Card, CardActions, CardContent, CardHeader, Fab, Snackbar, CircularProgress } from "@mui/material"
+import { Link, Container, Typography, Grid, Box, Card, CardActions, CardContent, CardHeader, Fab, Snackbar, CircularProgress, Checkbox } from "@mui/material"
 import { useParams, } from "react-router-dom"
 import { Template } from "../template"
-import { GetSpecificEvent, AddAttendee, RemoveAttendee, showDateWeekTime } from "../utils"
-import { Event, Attendee } from "../model"
+import { GetSpecificEvent, AddAttendee, RemoveAttendee, showDateWeekTime, UpdatePayment } from "../utils"
+import { Event, Attendee, User } from "../model"
 import PersonRemoveIcon from '@mui/icons-material/PersonRemove'
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
@@ -21,19 +21,16 @@ export function SingleEvent() {
     const [event, setEvent] = useState<Event>({} as Event)
     const [open, setOpen] = React.useState(false)
     const [errorMessage, setErrorMessage] = useState("")
-    const [cookies, setCookie] = React.useState(document.cookie)
-
+    const [user, setUser] = React.useState<User>()
     const [loadingRemove, setloadingRemove] = React.useState(false);
     const [loading, setLoading] = React.useState(false);
     const [success, setSuccess] = React.useState(false);
 
     useEffect(() => {
-        const updateCookies = () => {
-            if (cookies.length !== document.cookie.length) {
-                setCookie(document.cookie)
-            }
+        let userInfo = sessionStorage.getItem("user")
+        if ((user === undefined) && (userInfo !== null)) {
+            setUser(JSON.parse(userInfo))
         }
-        window.setInterval(updateCookies, 100)
 
         GetSpecificEvent(params.date as string).then(response => {
             if ((response !== undefined) && (response !== null)) {
@@ -42,7 +39,7 @@ export function SingleEvent() {
         }).catch(e => {
             window.location.hash = "/"
         })
-    }, [params.date, cookies])
+    }, [params.date, user])
 
     function handleClose(newEvent?: any, reason?: string) {
         if (reason === 'clickaway') {
@@ -57,7 +54,7 @@ export function SingleEvent() {
             setLoading(true)
         }
 
-        AddAttendee(params.date as string, null).then(response => {
+        AddAttendee(params.date as string).then(response => {
             const event = response as Event
             event.date = new Date(event.date)
             setEvent(event)
@@ -124,8 +121,8 @@ export function SingleEvent() {
                 }}
             />
             <CardContent>
-            <Grid container spacing={2} columns={18}>
-            <Grid item xs={12}>
+                <Grid container spacing={2} columns={18}>
+                    <Grid item xs={12}>
                         {getAttendes(event?.attendees)}
                         <Box sx={{ m: 1, position: 'relative' }}>
                             <Fab onClick={addAttendee} sx={buttonSx} color="primary" aria-label="add" variant="extended" disabled={loading}>
@@ -161,12 +158,10 @@ export function SingleEvent() {
                                     }}
                                 />
                             )}
-
                         </Box>
                     </Grid>
                     <Grid item xs={6}>
                         <img style={{
-                            //position: "relative",
                             right: "0px",
                             top: "0px",
                             width: "150px",
@@ -180,6 +175,14 @@ export function SingleEvent() {
         </Card>
     }
 
+    function changePaymentStatus() {
+        UpdatePayment(params.date as string).then(response => {
+            if (response) {
+                setEvent(response as Event)
+            }
+        })
+    }
+
     function getAttendes(attendees: Attendee[]) {
         if ((attendees === undefined)) {
             return
@@ -188,7 +191,11 @@ export function SingleEvent() {
         let normalList = [] as JSX.Element[]
         let normalSlice = attendees.slice(0, event.max_participants)
         normalSlice.forEach(attendee => {
-            normalList.push(<Typography key={attendee.name} component="h2" variant="h5" color="text.primary"><li>{attendee.name}</li></Typography>)
+            normalList.push(
+                <Typography key={attendee.name} component="h2" variant="h5" color="text.primary">
+                    <li>{attendee.name}<Checkbox hidden={user?.name !== attendee.name} onChange={changePaymentStatus} defaultChecked={attendee.paid_time !== null} />paid</li>
+                </Typography>
+            )
         })
 
         let waitingList = [] as JSX.Element[]

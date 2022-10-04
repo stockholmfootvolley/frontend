@@ -7,7 +7,7 @@ import Typography from '@mui/material/Typography';
 import Link from '@mui/material/Link';
 import GlobalStyles from '@mui/material/GlobalStyles';
 import Container from '@mui/material/Container';
-import { GetToken, SetUserPicture } from './utils';
+import { User } from './model';
 
 const footers = [
   {
@@ -28,25 +28,22 @@ const footers = [
 export function Template(props: any) {
   const [node, setNode] = React.useState<JSX.Element[]>([])
 
-  function CreateAvatar(name: string, picture: string) {
-    setNode([
-      <React.Fragment>
-        <Typography>{name}&nbsp;</Typography><Avatar alt={name} src={picture} />
-      </React.Fragment>])
-  }
-
   React.useMemo(() => {
-    let token = GetToken()
-    if (token === undefined) {
-      return
+    let userInfo = sessionStorage.getItem("user")
+    if (userInfo !== null) {
+      let user = JSON.parse(userInfo) as User
+      setNode([
+        <React.Fragment>
+          <Typography>{user.name}&nbsp;</Typography><Avatar alt={user.name} src={user.picture} />
+        </React.Fragment>])
     }
-    SetUserPicture(token, CreateAvatar)
+
   }, [])
 
   return (
     <React.Fragment>
-      <GlobalStyles styles={{ ul: { margin: 0, padding: 0, listStyle: 'none' } }} key={"globalstyles"}/>
-      <CssBaseline key={"cssbaseline"}/>
+      <GlobalStyles styles={{ ul: { margin: 0, padding: 0, listStyle: 'none' } }} key={"globalstyles"} />
+      <CssBaseline key={"cssbaseline"} />
       <AppBar
         key={"appbar"}
         position="static"
@@ -72,12 +69,12 @@ export function Template(props: any) {
           py: [3, 6],
         }}
       >
-        <Grid 
+        <Grid
           key={"grid2"}
           sx={{
-          display: 'center',
-          justifyContent: 'center',
-        }}>
+            display: 'center',
+            justifyContent: 'center',
+          }}>
           {footers.map((footer) => (
             <Grid item xs={6} sm={3} key={`${footer.title}grid`}>
               <Typography variant="h6" color="text.primary" gutterBottom key={`${footer.title}typo`}>

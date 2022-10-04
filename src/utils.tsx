@@ -1,4 +1,4 @@
-import { Event, PaymentLink, User } from "./model";
+import { Event, User } from "./model";
 import Cookies from 'universal-cookie';
 import * as jose from 'jose'
 
@@ -70,16 +70,12 @@ export function GetUser(): Promise<void | User | null | undefined> {
         })
 }
 
-export function AddAttendee(date: string, addPayment: Date | null): Promise<void | Event | PaymentLink | null | undefined> {
+export function AddAttendee(date: string): Promise<void | Event | null | undefined> {
     const url = new URL(`/event/${date}`, API)
 
     let token = GetToken()
     if (!token) {
         redirectLogin(date)
-    }
-
-    if (addPayment) {
-        url.searchParams.set("paid", addPayment.toString())
     }
 
     return fetch(url, {
@@ -90,10 +86,6 @@ export function AddAttendee(date: string, addPayment: Date | null): Promise<void
     })
         .then(response => {
             const data = response.json()
-            if (response.status === 307) {
-                return data as unknown as PaymentLink
-            }
-
             const event = data as unknown as Event
             event.date = new Date(event.date)
             return event
@@ -136,16 +128,6 @@ export function ParseJWTToken(token: string): any {
     return jose.decodeJwt(token) as any
 }
 
-export function SetUserPicture(token: string, callback: Function) {
-    try {
-        let jwtToken = jose.decodeJwt(token) as any
-        callback(jwtToken.name, jwtToken.picture)
-        // likely to be FB token
-    } catch (JWTInvalid) {
-        GetFacebookTokenInfo(token, callback)
-    }
-}
-
 export function showDateAndTime(date: Date): string {
     if (date === undefined)
         return ""
@@ -178,14 +160,29 @@ function getZeroInFront(n: number): string {
     return `${n}`
 }
 
-export function GetFacebookTokenInfo(token: string, callback: Function): Promise<any> {
-    //@ts-ignore it.
-    return window.FB.api('/me?fields=name,email,picture',
-        { access_token: token },
-        function (response: any) {
-            callback(response.name, response.picture.data?.url)
-        }
-    )
+export function UpdatePayment(date: string): Promise<void | Event | null | undefined> {
+    const url = new URL(`/event/${date}`, API)
+
+    let token = GetToken()
+    if (!token) {
+        redirectLogin(date)
+    }
+
+    return fetch(url, {
+        headers: {
+            "Authorization": `Bearer ${token}`,
+        },
+        method: "PUT",
+    })
+        .then(response => response.json())
+        .then(data => {
+            const event = data as Event
+            event.date = new Date(event.date)
+            return event
+        })
+        .catch(error => {
+            console.error(error)
+        })
 }
 
 export function redirectLogin(date: string) {
