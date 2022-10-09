@@ -27,11 +27,6 @@ export function SingleEvent() {
     const [success, setSuccess] = React.useState(false);
 
     useEffect(() => {
-        let userInfo = sessionStorage.getItem("user")
-        if ((user === undefined) && (userInfo !== null)) {
-            setUser(JSON.parse(userInfo))
-        }
-
         GetSpecificEvent(params.date as string).then(response => {
             if ((response !== undefined) && (response !== null)) {
                 setEvent(response as Event)
@@ -39,6 +34,11 @@ export function SingleEvent() {
         }).catch(e => {
             window.location.hash = "/"
         })
+
+        let userInfo = sessionStorage.getItem("user")
+        if ((user === undefined) && (userInfo !== null)) {
+            setUser(JSON.parse(userInfo))
+        }
     }, [params.date, user])
 
     function handleClose(newEvent?: any, reason?: string) {
@@ -101,7 +101,7 @@ export function SingleEvent() {
 
         return <Card>
             <CardHeader
-                title={`${showDateWeekTime(event.date)}`}
+                title={`${showDateWeekTime(event?.date)}`}
                 subheader={
                     <Typography align="center" component="h5" variant="caption" color="text.secondary">
                         <Link target="_blank" href={`https://maps.google.com/?q=${event?.local}`}>{event?.local.split(",")[0]}</Link>
@@ -124,7 +124,7 @@ export function SingleEvent() {
                 <Grid container spacing={2} columns={18}>
                     <Grid item xs={12}>
                         {getAttendes(event?.attendees)}
-                        <Box sx={{ m: 1, position: 'relative' }}>
+                        <Box hidden={user?.level !== event.level} sx={{ m: 1, position: 'relative' }}>
                             <Fab onClick={addAttendee} sx={buttonSx} color="primary" aria-label="add" variant="extended" disabled={loading}>
                                 <PersonAddIcon />
                                 &nbsp;&nbsp;I'm Coming
@@ -241,7 +241,7 @@ export function SingleEvent() {
                 align="center"
                 color="text.primary"
                 gutterBottom
-            >{`${event.price} sek`}
+            >{`${event?.price} sek`}
             </Typography>
             {getEvent()}
         </Container>

@@ -124,6 +124,16 @@ export function GetToken(): string | undefined {
     return cookies.get("token")
 }
 
+export function GetUserToken(): string | undefined {
+    const cookies = new Cookies()
+    return cookies.get("user")
+}
+
+export function SetUserToken(): string | undefined {
+    const cookies = new Cookies()
+    return cookies.get("user")
+}
+
 export function ParseJWTToken(token: string): any {
     return jose.decodeJwt(token) as any
 }
