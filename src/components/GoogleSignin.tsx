@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react"
 import Cookies from 'universal-cookie';
 import { ParseJWTToken } from "../utils";
 
-export default function GoogleSignin() {
+export default function GoogleSignin(props: { onLogin: Function }) {
     const [user, setUser] = useState(false)
 
     const handleGoogleSignIn = React.useCallback((res: CredentialResponse) => {
@@ -14,8 +14,10 @@ export default function GoogleSignin() {
         let expires = new Date(payload.exp * 1000)
 
         cookies.set("token", res.credential, { secure: true, sameSite: "strict", expires: expires })
+
+        props.onLogin()
         setUser(true)
-    }, [])
+    }, [props])
 
     const initializeGsi = React.useCallback(() => {
         //@ts-ignore it.

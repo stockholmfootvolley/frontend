@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react"
 import { Template } from "../template"
-import { GetUser, NotAMember, TokenNotFound } from "../utils"
+import { GetToken, GetUser, NotAMember, SaveUserToken } from "../utils"
 import { Typography, Container, Alert, Snackbar, Box, Card, CardContent, LinearProgress } from "@mui/material"
 import GoogleSignin from "../components/GoogleSignin"
 import { FacebookSignIn } from "../components/FacebookSignin"
 import { useParams } from "react-router-dom"
-import { User } from "../model"
 
 export function Login() {
     const [open, setOpen] = React.useState(false)
@@ -15,36 +14,45 @@ export function Login() {
     let params = useParams()
 
     useEffect(() => {
-        GetUser().then(response => {
-            setInProgress(false)
-            if ((response !== undefined) && (response !== null)) {
-                sessionStorage.setItem("user", JSON.stringify(response as User))
+        let token = GetToken()
 
+        if (token === undefined) {
+            setAllowLogin(true)
+            setInProgress(false)
+            return
+        }
+
+        GetUser()
+            .then(response => {
+                if ((response === undefined) || (response === null)) {
+                    return
+                }
+
+                SaveUserToken(response)
+                setInProgress(false)
                 let redirectTo = "/"
                 redirectTo += params.redirect as string
                 window.location.hash = redirectTo
-            }
-        }).catch(e => {
-            switch (e) {
-                case TokenNotFound: {
-                    setAllowLogin(true)
-                    setInProgress(false)
-                    setErrorMessage("Login with Google before continue")
-                    break
+            }).catch(e => {
+                switch (e) {
+                    case NotAMember: {
+                        setErrorMessage("You are not a member. Contact us on Instagram")
+                        break
+                    }
+                    default: {
+                        setErrorMessage("Could not connect to server")
+                        break
+                    }
                 }
-                case NotAMember: {
-                    setErrorMessage("You are not a member. Contact us on instagram?")
-                    break
-                }
-                default: {
-                    setErrorMessage("Could not connect to server")
-                    break
-                }
-            }
-            setOpen(true)
-        })
+                setOpen(true)
+            })
 
-    }, [params.redirect])
+    }, [params.redirect, allowLogin])
+
+
+    function onLogin() {
+        setAllowLogin(false)
+    }
 
     function handleClose(newEvent?: any, reason?: string) {
         if (reason === 'clickaway') {
@@ -58,9 +66,9 @@ export function Login() {
             return
         }
         return <React.Fragment>
-            <GoogleSignin />
+            <GoogleSignin onLogin={onLogin} />
             <br />
-            <FacebookSignIn />
+            <FacebookSignIn onLogin={onLogin} />
         </React.Fragment>
     }
 

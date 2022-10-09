@@ -4,7 +4,7 @@ export interface Event {
     date: Date
     attendees: Attendee[]
     local: string
-    level: string
+    level: Level
     price: number
     max_participants: number
     qr_code: string
@@ -17,9 +17,19 @@ export interface Attendee {
     paid_time: Date
 }
 
+export interface UserInfo {
+    user: User
+    picture: string
+}
+
 export interface User {
     name: string
     email: string
-    level: string
-    picture : string
+    level: Level
+}
+
+export enum Level {
+    Basic = 0,
+    Medium,
+    Advanced,
 }

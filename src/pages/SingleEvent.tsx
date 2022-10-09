@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react"
-import { Link, Container, Typography, Grid, Box, Card, CardActions, CardContent, CardHeader, Fab, Snackbar, CircularProgress, Checkbox } from "@mui/material"
-import { useParams, } from "react-router-dom"
+import { Link, Container, Typography, Grid, Box, Card, CardActions, CardContent, CardHeader, Fab, Snackbar, CircularProgress, Checkbox, Button } from "@mui/material"
+import { useParams } from "react-router-dom"
 import { Template } from "../template"
-import { GetSpecificEvent, AddAttendee, RemoveAttendee, showDateWeekTime, UpdatePayment } from "../utils"
-import { Event, Attendee, User } from "../model"
+import { GetSpecificEvent, AddAttendee, RemoveAttendee, showDateWeekTime, UpdatePayment, GetUserToken } from "../utils"
+import { Event, Attendee, UserInfo } from "../model"
 import PersonRemoveIcon from '@mui/icons-material/PersonRemove'
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
@@ -21,7 +21,7 @@ export function SingleEvent() {
     const [event, setEvent] = useState<Event>({} as Event)
     const [open, setOpen] = React.useState(false)
     const [errorMessage, setErrorMessage] = useState("")
-    const [user, setUser] = React.useState<User>()
+    const [user, setUser] = React.useState<UserInfo>()
     const [loadingRemove, setloadingRemove] = React.useState(false);
     const [loading, setLoading] = React.useState(false);
     const [success, setSuccess] = React.useState(false);
@@ -35,11 +35,11 @@ export function SingleEvent() {
             window.location.hash = "/"
         })
 
-        let userInfo = sessionStorage.getItem("user")
-        if ((user === undefined) && (userInfo !== null)) {
-            setUser(JSON.parse(userInfo))
+        let userInfo = GetUserToken()
+        if (userInfo !== undefined) {
+            setUser(userInfo)
         }
-    }, [params.date, user])
+    }, [params.date])
 
     function handleClose(newEvent?: any, reason?: string) {
         if (reason === 'clickaway') {
@@ -124,7 +124,7 @@ export function SingleEvent() {
                 <Grid container spacing={2} columns={18}>
                     <Grid item xs={12}>
                         {getAttendes(event?.attendees)}
-                        <Box hidden={user?.level !== event.level} sx={{ m: 1, position: 'relative' }}>
+                        <Box hidden={user === undefined || event.level > user.user.level} sx={{ m: 1, position: 'relative' }}>
                             <Fab onClick={addAttendee} sx={buttonSx} color="primary" aria-label="add" variant="extended" disabled={loading}>
                                 <PersonAddIcon />
                                 &nbsp;&nbsp;I'm Coming
@@ -158,6 +158,11 @@ export function SingleEvent() {
                                     }}
                                 />
                             )}
+                        </Box>
+                        <Box hidden={user !== undefined} sx={{ m: 1, position: 'relative', alignContent: 'center' }}>
+                            <Link href={`/#/login/${event.id}`}>
+                                <Button variant="contained" onClick={function () { }}>Login</Button>
+                            </Link>
                         </Box>
                     </Grid>
                     <Grid item xs={6}>
@@ -193,7 +198,12 @@ export function SingleEvent() {
         normalSlice.forEach(attendee => {
             normalList.push(
                 <Typography key={attendee.name} component="h2" variant="h5" color="text.primary">
-                    <li>{attendee.name}<Checkbox hidden={user?.name !== attendee.name} onChange={changePaymentStatus} defaultChecked={attendee.paid_time !== null} />paid</li>
+                    <li>{attendee.name}
+                        {(user?.user.name !== attendee.name || event.price > 0) && 
+                            <React.Fragment>
+                            <Checkbox onChange={changePaymentStatus} defaultChecked={attendee.paid_time !== null} />paid
+                            </React.Fragment>
+                        }</li>
                 </Typography>
             )
         })

@@ -3,13 +3,15 @@ import React, { useState } from 'react';
 import FacebookLogin from 'react-facebook-login';
 import Cookies from 'universal-cookie';
 
-export function FacebookSignIn() {
+export function FacebookSignIn(props: { onLogin: Function }) {
     const [, setUser] = useState(false)
 
     function responseFacebook(payload: any) {
         const cookies = new Cookies();
         let expires = new Date(payload.data_access_expiration_time * 1000)
         cookies.set("token", payload.accessToken, { secure: true, sameSite: "strict", expires: expires })
+
+        props.onLogin()
         setUser(true)
     }
 

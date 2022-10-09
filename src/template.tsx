@@ -7,7 +7,7 @@ import Typography from '@mui/material/Typography';
 import Link from '@mui/material/Link';
 import GlobalStyles from '@mui/material/GlobalStyles';
 import Container from '@mui/material/Container';
-import { User } from './model';
+import { GetUserToken } from './utils';
 
 const footers = [
   {
@@ -29,12 +29,11 @@ export function Template(props: any) {
   const [node, setNode] = React.useState<JSX.Element[]>([])
 
   React.useMemo(() => {
-    let userInfo = sessionStorage.getItem("user")
-    if (userInfo !== null) {
-      let user = JSON.parse(userInfo) as User
+    let user = GetUserToken()
+    if (user !== undefined) {
       setNode([
         <React.Fragment>
-          <Typography>{user.name}&nbsp;</Typography><Avatar alt={user.name} src={user.picture} />
+          <Typography>{user.user.name}&nbsp;</Typography><Avatar alt={user.user.name} src={user.picture} />
         </React.Fragment>])
     }
 

@@ -1,7 +1,7 @@
-import { Event, User } from "./model";
+import { Event, UserInfo } from "./model";
 import Cookies from 'universal-cookie';
 import * as jose from 'jose'
-
+import { Level } from './model'
 const API = "https://booking.ramonmedeiros.dev"
 
 export const TokenNotFound = "token not found"
@@ -19,9 +19,12 @@ export function GetEvents(): Promise<void | Event[] | null | undefined> {
             }
 
             return response.json().then(data => {
-                const events = data as Event[]
-                events.forEach(event => {
+                const events = [] as Event[]
+                let a = data as any[]
+                a.forEach(event => {
+                    event.level = stringToLevel(event.level)
                     event.date = new Date(event.date)
+                    events.push(event as Event)
                 });
                 return events
             })
@@ -40,6 +43,7 @@ export function GetSpecificEvent(date: string): Promise<void | Event | null | un
         .then(data => {
             const event = data as Event
             event.date = new Date(event.date)
+            event.level = stringToLevel(data.level)
             return event
         })
         .catch(error => {
@@ -47,7 +51,7 @@ export function GetSpecificEvent(date: string): Promise<void | Event | null | un
         })
 }
 
-export function GetUser(): Promise<void | User | null | undefined> {
+export function GetUser(): Promise<void | UserInfo | null | undefined> {
     let token = GetToken()
     if (token === undefined) {
         return Promise.reject(TokenNotFound)
@@ -62,7 +66,7 @@ export function GetUser(): Promise<void | User | null | undefined> {
     })
         .then(response => response.json())
         .then(data => {
-            const user = data as User
+            const user = data as UserInfo
             return user
         })
         .catch(error => {
@@ -124,15 +128,25 @@ export function GetToken(): string | undefined {
     return cookies.get("token")
 }
 
-export function GetUserToken(): string | undefined {
+export function GetUserToken(): UserInfo | undefined {
     const cookies = new Cookies()
-    return cookies.get("user")
+    let userInfo = cookies.get("user")
+
+    if (userInfo !== undefined) {
+        let user = JSON.parse(atob(userInfo)) as UserInfo
+        return user
+    }
+
+    return userInfo
 }
 
-export function SetUserToken(): string | undefined {
+export function SaveUserToken(user: UserInfo) {
     const cookies = new Cookies()
-    return cookies.get("user")
+    var today = new Date();
+    today.setHours(today.getHours() + 4);
+    cookies.set("user", btoa(JSON.stringify(user)), { secure: true, expires: today })
 }
+
 
 export function ParseJWTToken(token: string): any {
     return jose.decodeJwt(token) as any
@@ -200,4 +214,18 @@ export function redirectLogin(date: string) {
     url.pathname = window.location.pathname
     url.hash = "/login/" + date as string
     window.location.href = url.toString()
+}
+
+export function stringToLevel(s: string): number {
+    switch (s) {
+        case "ADVANCED": {
+            return Level.Advanced
+        }
+        case "MEDIUM": {
+            return Level.Medium
+        }
+        default: {
+            return Level.Basic
+        }
+    }
 }
