@@ -160,7 +160,7 @@ export function SingleEvent() {
                             )}
                         </Box>
                         <Box hidden={user !== undefined} sx={{ m: 1, position: 'relative', alignContent: 'center' }}>
-                            <Link href={`/#/login/${event.id}`}>
+                            <Link href={`${window.location.pathname}/#/login/${event.id}`}>
                                 <Button variant="contained" onClick={function () { }}>Login</Button>
                             </Link>
                         </Box>
@@ -199,7 +199,7 @@ export function SingleEvent() {
             normalList.push(
                 <Typography key={attendee.name} component="h2" variant="h5" color="text.primary">
                     <li>{attendee.name}
-                        {(user?.user.name !== attendee.name || event.price > 0) && 
+                        {(user !== undefined) && (user.user.name !== attendee.name || event.price > 0) && 
                             <React.Fragment>
                             <Checkbox onChange={changePaymentStatus} defaultChecked={attendee.paid_time !== null} />paid
                             </React.Fragment>
