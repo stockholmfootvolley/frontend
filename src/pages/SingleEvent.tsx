@@ -7,7 +7,7 @@ import { Event, Attendee, UserInfo } from "../model"
 import PersonRemoveIcon from '@mui/icons-material/PersonRemove'
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
-import { blue, grey } from '@mui/material/colors';
+import { blue, blueGrey } from '@mui/material/colors';
 
 const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
     props,
@@ -104,19 +104,27 @@ export function SingleEvent() {
                 title={`${showDateWeekTime(event?.date)}`}
                 subheader={
                     <Typography align="center" component="h5" variant="caption" color="text.secondary">
-                        <Link target="_blank" href={`https://maps.google.com/?q=${event?.local}`}>{event?.local.split(",")[0]}</Link>
+                        <Link sx={{
+                            color: blueGrey[50],
+                            textDecoration: "underline",
+                            fontWeight: "bolder"
+                        }}
+                            target="_blank"
+                            href={`https://maps.google.com/?q=${event?.local}`}>{event?.local.split(",")[0]}</Link>
                     </Typography>}
                 titleTypographyProps={{ align: 'center' }}
                 subheaderTypographyProps={{
                     align: 'center',
                 }}
                 sx={{
+                    boxShadow: '1px 2px 3px',
                     backgroundColor: (theme) =>
-                        theme.palette.mode === 'light'
-                            ? theme.palette.grey[200]
-                            : theme.palette.grey[700],
+                        theme.palette.mode === 'dark'
+                            ? blue[600]
+                            : blue[600],
                     '&:hover': {
-                        bgcolor: grey[300],
+                        bgcolor: blue[700],
+                        color: blueGrey[50],
                     },
                 }}
             />
@@ -199,9 +207,9 @@ export function SingleEvent() {
             normalList.push(
                 <Typography key={attendee.name} component="h2" variant="h5" color="text.primary">
                     <li>{attendee.name}
-                        {(user !== undefined) && (user.user.name !== attendee.name || event.price > 0) && 
+                        {(user !== undefined) && (user.user.name !== attendee.name || event.price > 0) &&
                             <React.Fragment>
-                            <Checkbox onChange={changePaymentStatus} defaultChecked={attendee.paid_time !== null} />paid
+                                <Checkbox onChange={changePaymentStatus} defaultChecked={attendee.paid_time !== null} />paid
                             </React.Fragment>
                         }</li>
                 </Typography>

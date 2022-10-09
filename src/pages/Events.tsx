@@ -4,7 +4,7 @@ import { GetEvents, NotAMember, showDateWeekTime, TokenNotFound } from "../utils
 import { Event } from "../model"
 import { Grid, Card, CardHeader, CardContent, Box, Typography, CardActions, Container, Alert, Snackbar, Link } from "@mui/material"
 import { Link as LinkRouter } from "react-router-dom";
-import { grey } from '@mui/material/colors';
+import { grey, blue, blueGrey } from '@mui/material/colors';
 
 export function Events() {
   const [events, setEvents] = useState<Event[]>([])
@@ -63,7 +63,7 @@ export function Events() {
           sm={6}
           md={4}
         >
-          <Card>
+          <Card sx={{ boxShadow: '1px 2px 3px' }}>
             <LinkRouter
               to={event.date.toISOString().split('T')[0]}
               style={{ textDecoration: "none", color: "inherit" }}
@@ -75,14 +75,17 @@ export function Events() {
                   align: 'center',
                 }}
                 sx={{
+                  boxShadow: '1px 2px 3px',
                   backgroundColor: (theme) =>
-                    theme.palette.mode === 'light'
-                      ? theme.palette.grey[200]
-                      : theme.palette.grey[700],
+                    theme.palette.mode === 'dark'
+                      ? blue[600]
+                      : blue[600],
                   '&:hover': {
-                    bgcolor: grey[300],
+                    bgcolor: blue[700],
+                    color: blueGrey[50] ,
                   },
-                }}
+                }
+                }
               />
             </LinkRouter>
 
