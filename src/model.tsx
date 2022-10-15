@@ -3,6 +3,7 @@ export interface Event {
     name: string
     date: Date
     attendees: Attendee[]
+    payments: Payment[]
     local: string
     level: Level
     price: number
@@ -13,10 +14,14 @@ export interface Event {
 export interface Attendee {
     name: string
     phone: string
+    email: string
     sign_time: string
-    paid_time: Date
 }
 
+export interface Payment {
+    email: string
+    paid_timestamp: Date
+}
 export interface UserInfo {
     user: User
     picture: string

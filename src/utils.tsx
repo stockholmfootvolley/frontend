@@ -6,6 +6,7 @@ const API = "https://booking.ramonmedeiros.dev"
 
 export const TokenNotFound = "token not found"
 export const NotAMember = "not a member"
+export const NoReimbursement = "no reimbursement"
 
 export function GetEvents(): Promise<void | Event[] | null | undefined> {
     const url = new URL("/events", API)
@@ -198,14 +199,19 @@ export function UpdatePayment(date: string): Promise<void | Event | null | undef
         },
         method: "PUT",
     })
-        .then(response => response.json())
-        .then(data => {
-            const event = data as Event
-            event.date = new Date(event.date)
-            return event
+        .then(response => {
+
+            if (response.status === 417) {
+                return Promise.reject(NoReimbursement)
+            }
+            return response.json().then(data => {
+                const event = data as Event
+                event.date = new Date(event.date)
+                return event
+            })
         })
         .catch(error => {
-            console.error(error)
+            return Promise.reject(error)
         })
 }
 

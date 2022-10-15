@@ -175,12 +175,12 @@ export function SingleEvent() {
                     </Grid>
                     <Grid item xs={6}>
                         <a href="swish://open">
-                        <img style={{
-                            right: "0px",
-                            top: "0px",
-                            width: "150px",
-                            height: "150px"
-                        }} hidden={event.qr_code === ""} id="qrcode" alt="" src={`data:image/jpeg;base64,${event.qr_code}`} />
+                            <img style={{
+                                right: "0px",
+                                top: "0px",
+                                width: "150px",
+                                height: "150px"
+                            }} hidden={event.qr_code === ""} id="qrcode" alt="" src={`data:image/jpeg;base64,${event.qr_code}`} />
                         </a>
                     </Grid>
                 </Grid>
@@ -195,6 +195,9 @@ export function SingleEvent() {
             if (response) {
                 setEvent(response as Event)
             }
+        }).catch(error => {
+            setErrorMessage("No reimbursement 48 hours before training")
+            setOpen(true)
         })
     }
 
@@ -206,14 +209,27 @@ export function SingleEvent() {
         let normalList = [] as JSX.Element[]
         let normalSlice = attendees.slice(0, event.max_participants)
         normalSlice.forEach(attendee => {
+
+            let hasPayment = false
+            event.payments.forEach(payment => {
+                if (payment.email === attendee.email) {
+                    hasPayment = true
+                    return
+                }
+            })
+
             normalList.push(
-                <Typography key={attendee.name} component="h2" variant="h5" color="text.primary">
+                <Typography key={attendee.email} component="h2" variant="h5" color="text.primary">
                     <li>{attendee.name}
-                        {(user !== undefined) && (user.user.name !== attendee.name || event.price > 0) &&
+                        {event.price > 0 &&
                             <React.Fragment>
-                                <Checkbox onChange={changePaymentStatus} defaultChecked={attendee.paid_time !== null} />paid
+                                <Checkbox
+                                    onChange={changePaymentStatus}
+                                    defaultChecked={hasPayment}
+                                    disabled={(user !== undefined) && (user.user.email !== attendee.email)} />paid
                             </React.Fragment>
-                        }</li>
+                        }
+                    </li>
                 </Typography>
             )
         })
@@ -227,7 +243,7 @@ export function SingleEvent() {
             waitingListHeader.push(<Typography key="waiting_list" component="h3" variant="h5" color="text.primary">Waiting List ({waitingSlice.length})</Typography>)
         }
         waitingSlice.forEach(attendee => {
-            waitingList.push(<Typography key={attendee.name} component="h2" variant="h5" color="text.primary"><li>{attendee.name}</li></Typography>)
+            waitingList.push(<Typography key={attendee.email} component="h2" variant="h5" color="text.primary"><li>{attendee.name}</li></Typography>)
         })
 
         return <React.Fragment key={Math.random()}>
