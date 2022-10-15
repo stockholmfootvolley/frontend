@@ -175,6 +175,7 @@ export function SingleEvent() {
                     </Grid>
                     <Grid item xs={6}>
                         <a href="swish://open">
+                            <Typography>+46724675429</Typography>
                             <img style={{
                                 right: "0px",
                                 top: "0px",
