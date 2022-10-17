@@ -173,7 +173,7 @@ export function SingleEvent() {
                             </Link>
                         </Box>
                     </Grid>
-                    <Grid item xs={6}>
+                    <Grid hidden={event.qr_code === ""} item xs={6}>
                         <a href="swish://open">
                             <Typography>+46724675429</Typography>
                             <img style={{
@@ -181,7 +181,7 @@ export function SingleEvent() {
                                 top: "0px",
                                 width: "150px",
                                 height: "150px"
-                            }} hidden={event.qr_code === ""} id="qrcode" alt="" src={`data:image/jpeg;base64,${event.qr_code}`} />
+                            }} id="qrcode" alt="" src={`data:image/jpeg;base64,${event.qr_code}`} />
                         </a>
                     </Grid>
                 </Grid>
